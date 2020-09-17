@@ -14,17 +14,17 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/counter',
-      name: 'counter',
+      path: '/offer-vehicle',
+      name: 'offer-vehicle',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "counter" */ './views/Counter.vue'),
+      component: () => import('./views/OfferVehicle.vue'),
     },
     {
-      path: '/fetch-data',
-      name: 'fetch-data',
-      component: () => import(/* webpackChunkName: "fetch-data" */ './views/FetchData.vue'),
+      path: '/find-a-ride',
+      name: 'find-a-ride',
+      component: () => import('./views/FindARide.vue'),
     },
   ],
 });

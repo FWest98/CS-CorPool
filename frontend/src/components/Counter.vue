@@ -28,5 +28,6 @@ export default class Counter extends Vue {
   private reset() {
     this.resetCounter();
   }
+  
 }
 </script>

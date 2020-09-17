@@ -31,7 +31,7 @@
     </v-content>
 
     <v-footer app>
-      <span>&nbsp;Software Ateliers&nbsp;&copy;&nbsp;2020</span>
+      <span>&nbsp;Web and Cloud Computing&nbsp;&copy;&nbsp;2020</span>
     </v-footer>
 
   </v-app>
@@ -49,11 +49,11 @@ export default class App extends Vue {
   private drawer: boolean = true;
   private miniVariant: boolean = false;
   private right: boolean = true;
-  private title: string = 'ASP.NET Core Vue Starter';
+  private title: string = 'CarPool';
   private items = [
     { title: 'Home', icon: 'home', link: '/' },
-    { title: 'Counter', icon: 'touch_app', link: '/counter' },
-    { title: 'Fetch data', icon: 'get_app', link: '/fetch-data' },
+    { title: 'Offer vehicle', icon: 'mdi-car-multiple', link: '/offer-vehicle' },
+    { title: 'Find a ride', icon: 'mdi-account-search', link: '/find-a-ride' },
   ];
 }
 </script>

@@ -1,3 +1,4 @@
+// TODO why do we need this decorator?
 <template>
   <v-container fluid>
     <v-slide-y-transition mode="out-in">
@@ -47,7 +48,7 @@
 <script lang="ts">
 // an example of a Vue Typescript component using vue-property-decorator
 import { Component, Vue } from 'vue-property-decorator';
-import { Forecast } from '../models/Forecast';
+import { Ride } from '../models/Ride';
 import axios from 'axios';
 
 @Component({})
@@ -55,7 +56,7 @@ export default class FetchDataView extends Vue {
   private loading: boolean = true;
   private showError: boolean = false;
   private errorMessage: string = 'Error while loading weather forecast.';
-  private forecasts: Forecast[] = [];
+  private forecasts: Ride[] = [];
   private headers = [
     { text: 'Date', value: 'date' },
     { text: 'Temp. (C)', value: 'temperatureC' },
@@ -78,7 +79,7 @@ export default class FetchDataView extends Vue {
 
   private async fetchWeatherForecasts() {
     try {
-      const response = await axios.get<Forecast[]>('api/WeatherForecast');
+      const response = await axios.get<Ride[]>('api/WeatherForecast');
       this.forecasts = response.data;
     } catch (e) {
       this.showError = true;
