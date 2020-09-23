@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CorPool.BackEnd.Helpers;
+using CorPool.BackEnd.Models;
 using CorPool.BackEnd.Options;
 using CorPool.BackEnd.Providers;
 using Microsoft.AspNetCore.Builder;
@@ -9,8 +10,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 
 namespace CarPool
 {
@@ -26,13 +25,14 @@ namespace CarPool
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             // Register Options
-            services.Configure<MongoOptions>(Configuration.GetSection("Mongo"));
+            services.Configure<MongoOptions>(Configuration.GetSection("Mongo"), o => o.BindNonPublicProperties = true);
 
             // Register MVC parts
             services.AddControllers();
 
             // Register providers
             services.AddSingleton<MongoDbProvider>();
+            services.AddSingleton<DatabaseContext>();
 
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
@@ -76,6 +76,9 @@ namespace CarPool
             }
 
             app.UseStaticFiles();
+
+            // Custom Tenant middleware
+            app.UseMiddleware<TenantMiddleware>();
 
             app.UseRouting();
 

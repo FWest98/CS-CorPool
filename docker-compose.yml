@@ -8,6 +8,7 @@ services:
       dockerfile: backend/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - SUB_ENV=Docker
       - ASPNETCORE_URLS=http://+:80
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
@@ -15,9 +16,9 @@ services:
       - MONGO_PASSWORD=root
     ports:
       - "33080:80"
-    volumes:
+    #volumes:
     #  - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro # this is a windows trick for getting the ssl to work
+    #  - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro # this is a windows trick for getting the ssl to work
   
   frontend:
     image: corpool-frontend
