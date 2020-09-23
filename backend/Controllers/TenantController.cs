@@ -1,21 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CorPool.BackEnd.Controllers;
-using CorPool.BackEnd.Models;
-using CorPool.BackEnd.Providers;
+using CorPool.BackEnd.DatabaseModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
-namespace CarPool.Controllers
+namespace CorPool.BackEnd.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class TenantController : AbstractApiController {
         public TenantController(DatabaseContext database) : base(database) { }
 
-        public async Task<Tenant> Get() => Tenant;
+        public async Task<IEnumerable<ApiModels.Tenant>> Get() {
+            // List all tenants
+            var tenants = await database.Tenants.AsQueryable().ToListAsync();
+            return tenants.Select(s => new ApiModels.Tenant(s));
+        }
     }
 }

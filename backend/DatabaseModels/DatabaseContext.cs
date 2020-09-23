@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CorPool.BackEnd.Providers;
+﻿using CorPool.BackEnd.Providers;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
-namespace CorPool.BackEnd.Models {
+namespace CorPool.BackEnd.DatabaseModels {
     /**
      * Class to provide easy access to queryables of data sets
      */
@@ -16,5 +13,11 @@ namespace CorPool.BackEnd.Models {
         }
 
         public IMongoCollection<Tenant> Tenants => _dbProvider.GetCollection<Tenant>("Tenants");
+    }
+
+    public static class TenantedMongoCollectionExtensions {
+        public static IMongoQueryable<T> Tenanted<T>(this IMongoCollection<T> collection, Tenant tenant)
+            where T : ITenanted
+            => collection.AsQueryable().Where(s => s.TenantId == tenant.Id);
     }
 }

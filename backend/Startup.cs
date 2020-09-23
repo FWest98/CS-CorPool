@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using CorPool.BackEnd.Helpers;
-using CorPool.BackEnd.Models;
+using CorPool.BackEnd.DatabaseModels;
 using CorPool.BackEnd.Options;
 using CorPool.BackEnd.Providers;
 using Microsoft.AspNetCore.Builder;
