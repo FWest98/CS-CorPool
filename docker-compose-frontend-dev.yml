@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  backend:
+    image: corpool-backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SUB_ENV=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - MONGO_HOST=mongo
+      - MONGO_PORT=33017
+      - MONGO_USERNAME=root
+      - MONGO_PASSWORD=root
+    ports:
+      - "33080:80"
+    #volumes:
+    #  - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+    #  - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro # this is a windows trick for getting the ssl to work
+  mongo:
+    image: mongo:4.4.1-bionic
+    restart: always
+    ports:
+      - "33017:27017"
+    volumes:
+      - ./data/mongo:/data/db:rw
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: root
