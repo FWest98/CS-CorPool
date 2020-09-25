@@ -12,7 +12,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
-      - MONGO_USERNAME=root
+      - Mongo_Username=root
       - MONGO_PASSWORD=root
     ports:
       - "33080:80"
@@ -33,13 +33,49 @@ services:
       context: frontend
       dockerfile: Dockerfile
 
-  mongo:
-    image: mongo:4.4.1-bionic
-    restart: always
-    ports:
-      - "33017:27017"
+
+  # mongodb replication set
+  mongo-setup:
+    container_name: mongo-setup
+    image: mongo
+    restart: on-failure
     volumes:
-      - ./data/mongo:/data/db:rw
-    environment:
-        MONGO_INITDB_ROOT_USERNAME: root
-        MONGO_INITDB_ROOT_PASSWORD: root
+      - ./scripts:/scripts
+    entrypoint: [ "/scripts/setup.sh" ]
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+  
+  mongo1:
+    hostname: mongo1
+    image: mongo
+    ports:
+      - 27017:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+    volumes:
+      - ./volumes/mongodb/data1/db:/data/db 
+      - ./volumes/mongodb/data1/configdb:/data/configdb
+
+  mongo2:
+    hostname: mongo2
+    image: mongo
+    ports:
+      - 27018:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+    volumes:
+      - ./volumes/mongodb/data2/db:/data/db
+      - ./volumes/mongodb/data2/configdb:/data/configdb
+
+  mongo3:
+    hostname: mongo3
+    image: mongo
+    ports:
+      - 27019:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
+    volumes:
+      - ./volumes/mongodb/data3/db:/data/db
+      - ./volumes/mongodb/data3/configdb:/data/configdb
