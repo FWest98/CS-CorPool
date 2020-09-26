@@ -1,8 +1,8 @@
 import { GetterTree } from 'vuex';
-import { CounterState } from './types';
+import { OfferState } from './types';
 import { RootState } from '../types';
 
-export const getters: GetterTree<CounterState, RootState> = {
+export const getters: GetterTree<OfferState, RootState> = {
     currentCount(state): number {
         return state.counter;
     },

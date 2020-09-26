@@ -14,12 +14,12 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/offer-vehicle',
-      name: 'offer-vehicle',
+      path: '/offer-a-ride',
+      name: 'offer-a-ride',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('./views/OfferVehicle.vue'),
+      component: () => import('./views/OfferARide.vue'),
     },
     {
       path: '/find-a-ride',

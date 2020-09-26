@@ -38,12 +38,9 @@
 </template>
 
 <script lang="ts">
-import HelloWorld from '@/components/HelloWorld.vue';
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component({
-  components: { HelloWorld },
-})
+@Component({})
 export default class App extends Vue {
   private clipped: boolean = true;
   private drawer: boolean = true;
@@ -52,7 +49,7 @@ export default class App extends Vue {
   private title: string = 'CarPool';
   private items = [
     { title: 'Home', icon: 'home', link: '/' },
-    { title: 'Offer vehicle', icon: 'mdi-car-multiple', link: '/offer-vehicle' },
+    { title: 'Offer a ride', icon: 'mdi-car-multiple', link: '/offer-a-ride' },
     { title: 'Find a ride', icon: 'mdi-account-search', link: '/find-a-ride' },
   ];
 }

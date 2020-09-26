@@ -2,16 +2,16 @@ import { Module } from 'vuex';
 import { getters } from './getters';
 import { actions } from './actions';
 import { mutations } from './mutations';
-import { CounterState } from './types';
+import { OfferState } from './types';
 import { RootState } from '../types';
 
-export const state: CounterState = {
+export const state: OfferState = {
   counter: 0,
 };
 
 const namespaced: boolean = true;
 
-export const counter: Module<CounterState, RootState> = {
+export const offer: Module<OfferState, RootState> = {
   namespaced,
   state,
   getters,

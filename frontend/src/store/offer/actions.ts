@@ -1,9 +1,9 @@
 import { ActionTree } from 'vuex';
 import axios from 'axios';
-import { CounterState } from './types';
+import { OfferState } from './types';
 import { RootState } from '../types';
 
-export const actions: ActionTree<CounterState, RootState> = {
+export const actions: ActionTree<OfferState, RootState> = {
   increment({ commit }): any {
     commit('incrementCounter');
   },
