@@ -12,8 +12,8 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
-      - Mongo_Username=root
-      - MONGO_PASSWORD=root
+      - MONGO__USERNAME=root
+      - MONGO__PASSWORD=root
     ports:
       - "33080:80"
     #volumes:
