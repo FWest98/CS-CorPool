@@ -1,28 +1,14 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:55454/",
-      "sslPort": 44349
-    }
-  },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "environmentVariables": {
-        "SUB_ENV": "IIS",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "CorPool": {
       "commandName": "Project",
       "launchBrowser": false,
       "environmentVariables": {
-        "SUB_ENV": "IIS",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "SUB_ENV": "Kestrel",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_FORWARDEDHEADERS_ENABLED": "true" 
       },
-      "applicationUrl": "http://localhost:31080"
+      "applicationUrl": "http://0.0.0.0:31080"
     },
     "Docker": {
       "commandName": "Docker",

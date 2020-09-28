@@ -15,7 +15,7 @@ namespace CorPool.BackEnd.Controllers {
         public async Task<IEnumerable<ApiModels.Offer>> Get() {
             var offers = new List<ApiModels.Offer> {
                 new ApiModels.Offer {
-                    Id = "1",
+                    Id = "NEW",
                     User = new User { Name = "Danny" },
                     ArrivalTime = DateTime.Now,
                     Confirmations = new List<Confirmation> {

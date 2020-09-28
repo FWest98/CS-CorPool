@@ -34,9 +34,6 @@ namespace CarPool
             services.AddSingleton<MongoDbProvider>();
             services.AddSingleton<DatabaseContext>();
 
-            // Allow CORS
-            services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
-
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
                 services.Configure<ForwardedHeadersOptions>(options => {
