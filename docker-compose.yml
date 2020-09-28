@@ -12,10 +12,11 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - SUB_ENV=Docker
       - ASPNETCORE_URLS=http://+:80
-      - Mongo__Host=mongo
+      - Mongo__Host=mongo-primary
       - Mongo__Port=27017
       - Mongo__Username=root
       - Mongo__Password=root
+      - Mongo__ReplicaSetName=replicaset
     ports:
       - "33080:80"
   
