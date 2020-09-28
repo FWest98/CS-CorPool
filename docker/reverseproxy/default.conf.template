@@ -1,0 +1,21 @@
+# First try to contact a local development instance before using the Dockerized fallback
+upstream backend {
+    server ${BACKEND_LOCAL_ADDRESS};
+    server ${BACKEND_DOCKER_ADDRESS} backup;
+}
+
+upstream frontend {
+    server ${FRONTEND_LOCAL_ADDRESS};
+    server ${FRONTEND_DOCKER_ADDRESS} backup;
+}
+
+server {
+    location /api {
+        proxy_set_header Host $host;
+        proxy_pass http://backend/api;
+    }
+
+    location / {
+        proxy_pass http://frontend/;
+    }
+}

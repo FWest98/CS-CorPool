@@ -17,31 +17,37 @@ services:
       - Mongo__Username=root
       - Mongo__Password=root
       - Mongo__ReplicaSetName=replicaset
-    ports:
-      - "33080:80"
   
   frontend:
     image: corpool-frontend
     depends_on:
       - backend
-    ports:
-      - "32080:80"
-    environment:
-      - BACKEND_SERVER=backend
-      - BACKEND_PORT=80
     build:
       context: frontend
       dockerfile: Dockerfile
 
+  revproxy:
+    image: nginx
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "${APP_LOCAL_PORT}:80"
+    volumes:
+      - "./docker/reverseproxy:/etc/nginx/templates/"
+    environment:
+      - BACKEND_DOCKER_ADDRESS=backend:80
+      - FRONTEND_DOCKER_ADDRESS=frontend:80
+      - BACKEND_LOCAL_ADDRESS=${HOST_IP}:${BACKEND_LOCAL_PORT}
+      - FRONTEND_LOCAL_ADDRESS=${HOST_IP}:${FRONTEND_LOCAL_PORT}
 
   # MongoDB replication set
   mongo-primary:
     image: 'bitnami/mongodb:latest'
     restart: always
-    scale: 1
     hostname: mongo-primary
     ports:
-      - "33017:27017"
+      - "${MONGO_LOCAL_PORT}:27017"
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongo-primary
       - MONGODB_REPLICA_SET_NAME=replicaset
@@ -51,20 +57,33 @@ services:
       - MONGODB_ROOT_PASSWORD=root
       - MONGODB_REPLICA_SET_KEY=corpoolreplica
     volumes:
-      - ./data/mongo:/bitnami/mongodb
+      - mongo-data:/bitnami/mongodb
     
-  mongo-secondary: # scalable
+  mongo-secondary-1: # we can't make it scalable in develop since name resolving is not deterministic
     image: 'bitnami/mongodb:latest'
     restart: always
-    ports:
-     - "33018-33025:27017"
     depends_on:
       - mongo-primary
     environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo-secondary-1
+      - MONGODB_REPLICA_SET_KEY=corpoolreplica
       - MONGODB_REPLICA_SET_MODE=secondary
       - MONGODB_REPLICA_SET_NAME=replicaset
       - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
-      - MONGODB_INITIAL_PRIMARY_PORT=27017
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
+
+  mongo-secondary-2: # we can't make it scalable in develop since name resolving is not deterministic
+    image: 'bitnami/mongodb:latest'
+    restart: always
+    depends_on:
+      - mongo-primary
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo-secondary-2
       - MONGODB_REPLICA_SET_KEY=corpoolreplica
-    scale: 2
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_REPLICA_SET_NAME=replicaset
+      - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
+
+volumes:
+  mongo-data:

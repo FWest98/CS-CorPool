@@ -7,7 +7,7 @@ import axios from "axios";
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
-axios.defaults.baseURL = process.env.NODE_ENV === "production" ? process.env.BACKEND_SERVER + ':' + process.env.BACKEND_PORT + '/api': 'localhost:33080/api'
+axios.defaults.baseURL = '/api'
 axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
 
 let config = { 
