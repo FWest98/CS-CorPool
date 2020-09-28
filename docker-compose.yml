@@ -3,6 +3,8 @@ version: '3.4'
 services:
   backend:
     image: corpool-backend
+    depends_on:
+     - mongo-primary
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -10,15 +12,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - SUB_ENV=Docker
       - ASPNETCORE_URLS=http://+:80
-      - MONGO_HOST=mongo
-      - MONGO_PORT=27017
-      - MONGO__USERNAME=root
-      - MONGO__PASSWORD=root
+      - Mongo__Host=mongo
+      - Mongo__Port=27017
+      - Mongo__Username=root
+      - Mongo__Password=root
     ports:
       - "33080:80"
-    #volumes:
-    #  - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-    #  - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro # this is a windows trick for getting the ssl to work
   
   frontend:
     image: corpool-frontend
@@ -34,48 +33,37 @@ services:
       dockerfile: Dockerfile
 
 
-  # mongodb replication set
-  mongo-setup:
-    container_name: mongo-setup
-    image: mongo
-    restart: on-failure
+  # MongoDB replication set
+  mongo-primary:
+    image: 'bitnami/mongodb:latest'
+    restart: always
+    scale: 1
+    hostname: mongo-primary
+    ports:
+      - "33017:27017"
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongo-primary
+      - MONGODB_REPLICA_SET_NAME=replicaset
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_USERNAME=root
+      - MONGODB_PASSWORD=root
+      - MONGODB_ROOT_PASSWORD=root
+      - MONGODB_REPLICA_SET_KEY=corpoolreplica
     volumes:
-      - ./scripts:/scripts
-    entrypoint: [ "/scripts/setup.sh" ]
+      - ./data/mongo:/bitnami/mongodb
+    
+  mongo-secondary: # scalable
+    image: 'bitnami/mongodb:latest'
+    restart: always
+    ports:
+     - "33018-33025:27017"
     depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
-  
-  mongo1:
-    hostname: mongo1
-    image: mongo
-    ports:
-      - 27017:27017
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
-    volumes:
-      - ./volumes/mongodb/data1/db:/data/db 
-      - ./volumes/mongodb/data1/configdb:/data/configdb
-
-  mongo2:
-    hostname: mongo2
-    image: mongo
-    ports:
-      - 27018:27017
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
-    volumes:
-      - ./volumes/mongodb/data2/db:/data/db
-      - ./volumes/mongodb/data2/configdb:/data/configdb
-
-  mongo3:
-    hostname: mongo3
-    image: mongo
-    ports:
-      - 27019:27017
-    restart: always
-    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0", "--journal", "--dbpath", "/data/db", "--enableMajorityReadConcern", "false" ]
-    volumes:
-      - ./volumes/mongodb/data3/db:/data/db
-      - ./volumes/mongodb/data3/configdb:/data/configdb
+      - mongo-primary
+    environment:
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_REPLICA_SET_NAME=replicaset
+      - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
+      - MONGODB_INITIAL_PRIMARY_PORT=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
+      - MONGODB_REPLICA_SET_KEY=corpoolreplica
+    scale: 2
