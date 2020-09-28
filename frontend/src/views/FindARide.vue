@@ -79,7 +79,7 @@ export default Vue.extend({
     // },
     async fetchRides() {
       try {
-        const response = await axios.get<Offer[]>('/offers');
+        const response = await axios.get<Offer[]>('/offer');
         this.offers = response.data;
       } catch (e) {
         this.showError = true;
