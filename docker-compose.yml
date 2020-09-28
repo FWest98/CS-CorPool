@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   backend:
+    hostname: backend
     image: corpool-backend
     depends_on:
      - mongo-primary
@@ -56,15 +57,17 @@ services:
   mongo-secondary: # scalable
     image: 'bitnami/mongodb:latest'
     restart: always
+    # hostname: mongo-secondary
     ports:
      - "33018-33025:27017"
     depends_on:
       - mongo-primary
     environment:
+      # - MONGODB_ADVERTISED_HOSTNAME=${hostname}
       - MONGODB_REPLICA_SET_MODE=secondary
       - MONGODB_REPLICA_SET_NAME=replicaset
       - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
-      - MONGODB_INITIAL_PRIMARY_PORT=27017
+      # - MONGODB_INITIAL_PRIMARY_PORT=27017  <-- this is the default value
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
       - MONGODB_REPLICA_SET_KEY=corpoolreplica
     scale: 2
