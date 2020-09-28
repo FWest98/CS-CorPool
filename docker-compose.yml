@@ -54,20 +54,36 @@ services:
     volumes:
       - ./data/mongo:/bitnami/mongodb
     
-  mongo-secondary: # scalable
+  mongo-secondary-1:
     image: 'bitnami/mongodb:latest'
     restart: always
-    # hostname: mongo-secondary
+    hostname: mongo-secondary-1
     ports:
      - "33018-33025:27017"
     depends_on:
       - mongo-primary
     environment:
-      # - MONGODB_ADVERTISED_HOSTNAME=${hostname}
+      - MONGODB_ADVERTISED_HOSTNAME=mongo-secondary-1
       - MONGODB_REPLICA_SET_MODE=secondary
       - MONGODB_REPLICA_SET_NAME=replicaset
       - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
       # - MONGODB_INITIAL_PRIMARY_PORT=27017  <-- this is the default value
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
       - MONGODB_REPLICA_SET_KEY=corpoolreplica
-    scale: 2
+      
+  mongo-secondary-2: 
+      image: 'bitnami/mongodb:latest'
+      restart: always
+      hostname: mongo-secondary-2
+      ports:
+       - "33018-33025:27017"
+      depends_on:
+        - mongo-primary
+      environment:
+        - MONGODB_ADVERTISED_HOSTNAME=mongo-secondary-2
+        - MONGODB_REPLICA_SET_MODE=secondary
+        - MONGODB_REPLICA_SET_NAME=replicaset
+        - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
+        # - MONGODB_INITIAL_PRIMARY_PORT=27017  <-- this is the default value
+        - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
+        - MONGODB_REPLICA_SET_KEY=corpoolreplica
