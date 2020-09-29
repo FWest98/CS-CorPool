@@ -4,7 +4,7 @@
       <v-row>
         <v-col>
           <h1>Find a ride</h1>
-          <p>Here you can view all existing offers</p>
+          <p>Here you can view all existing offers!!!</p>
 
           <v-data-table
             :headers="headers"

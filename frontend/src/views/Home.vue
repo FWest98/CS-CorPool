@@ -7,15 +7,17 @@
       <v-row>        
         <v-col>
           <h1 class="headline">Welcome to CarPool</h1>
-          <p>This page retrieves all the locations:</p>
-           
-          <ul>
+          <p>This our homepage :)</p>
+
+         <v-btn class="ma-2" color="info" @click.prevent="seedDatabase()">Seed database</v-btn>
+
+          <!-- <ul>
             <li v-for="location in locations" :key="location.id">
               <b>id:</b> {{ location.id }},
               <b>title:</b> {{ location.title }},
               <b>description:</b> {{ location.description }}
             </li>
-          </ul>
+          </ul> -->
         </v-col>
       </v-row>
     </v-slide-y-transition>
@@ -40,10 +42,10 @@ export default class Home extends Vue {
   errorMessage: string = "";
   locations: Location[] = [];
 
-  async getLocations() {
+  async seedDatabase () {
     console.log(axios.defaults);
     try {
-      const response = await axios.get<Location[]>('/locations');
+      const response = await axios.get<Location[]>('/admin');
       this.locations = response.data;
     } catch (e) {
       this.showError = true;
@@ -53,7 +55,7 @@ export default class Home extends Vue {
   }
 
   mounted() {
-    this.getLocations();
+    
   }
 }
 </script>
