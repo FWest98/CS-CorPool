@@ -8,10 +8,13 @@ import router from './router';
 import store from '@/store/index';
 import './registerServiceWorker';
 import dateFilter from '@/filters/date.filter';
-
+import { Datetime } from 'vue-datetime';
+import 'vue-datetime/dist/vue-datetime.css';
+Vue.component('datetime', Datetime);
 Vue.config.productionTip = false;
 
 Vue.filter('date', dateFilter);
+
 
 new Vue({
   vuetify,
