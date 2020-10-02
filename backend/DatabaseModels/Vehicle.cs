@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace CorPool.BackEnd.DatabaseModels {
-    public class Location {
+    public class Vehicle {
+        public string Brand { get; set; }
+        public string Model { get; set; }
+        public string Color { get; set; }
+
         [BsonRequired]
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public int Capacity { get; set; } // including driver
     }
 }

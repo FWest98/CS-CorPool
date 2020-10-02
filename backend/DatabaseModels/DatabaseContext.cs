@@ -12,6 +12,7 @@ namespace CorPool.BackEnd.DatabaseModels {
             _dbProvider = dbProvider;
         }
 
+        public IMongoCollection<Offer> Offers => _dbProvider.GetCollection<Offer>("Offers");
         public IMongoCollection<Tenant> Tenants => _dbProvider.GetCollection<Tenant>("Tenants");
         public IMongoCollection<User> Users => _dbProvider.GetCollection<User>("Users");
     }

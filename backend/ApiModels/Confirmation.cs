@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace CorPool.BackEnd.ApiModels {
     public class Confirmation {
-        public string Id { get; set; }
-        public Offer Offer { get; set; }
         public User User { get; set; }
         public Location PickupPoint { get; set; }
+
+        public Confirmation() {}
+        public Confirmation(DatabaseModels.Confirmation confirmation) {
+            PickupPoint = new Location(confirmation.PickupPoint);
+            User = new User { Id = confirmation.UserId };
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace CorPool.BackEnd.DatabaseModels {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
+        [BsonRequired]
         public string Identifier { get; set; }
 
         public string Name { get; set; }

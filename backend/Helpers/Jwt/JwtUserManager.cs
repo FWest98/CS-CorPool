@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CorPool.BackEnd.DatabaseModels;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,7 +20,7 @@ namespace CorPool.BackEnd.Helpers.Jwt {
             _authOptions = authOptions.Value;
         }
 
-        public async Task<string> GenerateJwtToken(User user) {
+        public Task<string> GenerateJwtToken(User user) {
             var claims = new List<Claim> {
                 new Claim("Tenant", user.TenantId),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
@@ -41,7 +37,7 @@ namespace CorPool.BackEnd.Helpers.Jwt {
                 signingCredentials: new SigningCredentials(new JwtSigningKey(_authOptions.SigningKey), SecurityAlgorithms.HmacSha256)
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(jwt);
+            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(jwt));
         }
     }
 }

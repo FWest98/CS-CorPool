@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CorPool.BackEnd.ApiModels;
-using CorPool.BackEnd.Attributes;
 using CorPool.BackEnd.DatabaseModels;
+using CorPool.BackEnd.Attributes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace CorPool.BackEnd.Controllers {
     [Tenanted]
@@ -13,40 +15,18 @@ namespace CorPool.BackEnd.Controllers {
     public class OfferController : AbstractApiController {
         public OfferController(DatabaseContext database) : base(database) { }
 
-        public async Task<IEnumerable<ApiModels.Offer>> Get() {
-            var offers = new List<ApiModels.Offer> {
-                new ApiModels.Offer {
-                    Id = "NEW",
-                    User = new ApiModels.User { Name = "Danny" },
-                    ArrivalTime = DateTime.Now,
-                    Confirmations = new List<Confirmation> {
-                        new Confirmation {
-                            User = new ApiModels.User { Name = "Tom" },
-                            PickupPoint = new ApiModels.Location { Description = "Your house", Title = "Easy" }
-                        }
-                    },
-                    From = new ApiModels.Location { Description = "Nijenborgh 4, Groningen", Title = "Home" },
-                    To = new ApiModels.Location { Description = "The brown office", Title = "Work" },
-                    Vehicle = new Vehicle { Brand = "Volvo", Capacity = 4, Color = "Black", Model = "V70" }
-                },
+        [HttpGet]
+        public async Task<ActionResult<List<ApiModels.Offer>>> Get() {
+            var dbOffers = await database.Offers.Tenanted(Tenant).ToListAsync();
+            var apiOffers = dbOffers.Select(s => new ApiModels.Offer(s)).ToList();
 
-                new ApiModels.Offer {
-                    Id = "2",
-                    User = new ApiModels.User { Name = "Eva" },
-                    ArrivalTime = DateTime.Now,
-                    Confirmations = new List<Confirmation> {
-                        new Confirmation {
-                            User = new ApiModels.User { Name = "Dirk" },
-                            PickupPoint = new ApiModels.Location { Description = "Your house", Title = "Easy" }
-                        }
-                    },
-                    From = new ApiModels.Location { Description = "Nijenborgh 4, Groningen", Title = "Home" },
-                    To = new ApiModels.Location { Description = "The brown office", Title = "Work" },
-                    Vehicle = new Vehicle { Brand = "Peugeot", Capacity = 3, Color = "White", Model = "204" }
-                }
-            };
+            // Set Users
+            await Task.WhenAll(apiOffers.Select(s => s.SetUsers(async userId => {
+                var dbUser = await database.Users.Tenanted(Tenant).FirstOrDefaultAsync(a => a.Id == userId);
+                return new ApiModels.User(dbUser);
+            })));
 
-            return offers;
+            return apiOffers;
         }
     }
 }

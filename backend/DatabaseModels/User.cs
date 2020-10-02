@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -12,42 +8,28 @@ namespace CorPool.BackEnd.DatabaseModels {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
+        [BsonRequired]
         public string TenantId { get; set; }
 
-        [ProtectedPersonalData]
-        public virtual string UserName { get; set; }
+        [BsonRequired]
+        public string UserName { get; set; }
+        public string NormalizedUserName { get; set; }
 
-        public virtual string NormalizedUserName { get; set; }
+        public string FullName { get; set; }
 
-        [ProtectedPersonalData]
-        public virtual string Email { get; set; }
-
-        public virtual string NormalizedEmail { get; set; }
-
-        [PersonalData]
+        [BsonRequired]
+        public string Email { get; set; }
+        public string NormalizedEmail { get; set; }
         public virtual bool EmailConfirmed { get; set; }
 
         public virtual string PasswordHash { get; set; }
-
         public virtual string SecurityStamp { get; set; }
 
-        public virtual string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
-
-        [ProtectedPersonalData]
         public virtual string PhoneNumber { get; set; }
-
-        [PersonalData]
         public virtual bool PhoneNumberConfirmed { get; set; }
 
-        [PersonalData]
-        public virtual bool TwoFactorEnabled { get; set; }
+        public List<Vehicle> Vehicles { get; set; }
 
-        public virtual DateTimeOffset? LockoutEnd { get; set; }
-
-        public virtual bool LockoutEnabled { get; set; }
-
-        public virtual int AccessFailedCount { get; set; }
-
-        public override string ToString() => this.UserName;
+        public override string ToString() => UserName;
     }
 }
