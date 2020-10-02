@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using CorPool.BackEnd.ApiModels;
 using CorPool.BackEnd.Attributes;
 using CorPool.BackEnd.DatabaseModels;
-using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CorPool.BackEnd.Controllers {
     [Tenanted]
+    [Authorize]
     public class OfferController : AbstractApiController {
         public OfferController(DatabaseContext database) : base(database) { }
 
@@ -16,11 +17,11 @@ namespace CorPool.BackEnd.Controllers {
             var offers = new List<ApiModels.Offer> {
                 new ApiModels.Offer {
                     Id = "NEW",
-                    User = new User { Name = "Danny" },
+                    User = new ApiModels.User { Name = "Danny" },
                     ArrivalTime = DateTime.Now,
                     Confirmations = new List<Confirmation> {
                         new Confirmation {
-                            User = new User { Name = "Tom" },
+                            User = new ApiModels.User { Name = "Tom" },
                             PickupPoint = new ApiModels.Location { Description = "Your house", Title = "Easy" }
                         }
                     },
@@ -31,11 +32,11 @@ namespace CorPool.BackEnd.Controllers {
 
                 new ApiModels.Offer {
                     Id = "2",
-                    User = new User { Name = "Eva" },
+                    User = new ApiModels.User { Name = "Eva" },
                     ArrivalTime = DateTime.Now,
                     Confirmations = new List<Confirmation> {
                         new Confirmation {
-                            User = new User { Name = "Dirk" },
+                            User = new ApiModels.User { Name = "Dirk" },
                             PickupPoint = new ApiModels.Location { Description = "Your house", Title = "Easy" }
                         }
                     },

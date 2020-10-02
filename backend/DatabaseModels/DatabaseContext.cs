@@ -13,6 +13,7 @@ namespace CorPool.BackEnd.DatabaseModels {
         }
 
         public IMongoCollection<Tenant> Tenants => _dbProvider.GetCollection<Tenant>("Tenants");
+        public IMongoCollection<User> Users => _dbProvider.GetCollection<User>("Users");
     }
 
     public static class TenantedMongoCollectionExtensions {

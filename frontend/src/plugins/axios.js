@@ -10,8 +10,6 @@ import axios from "axios";
 axios.defaults.baseURL = '/api'
 axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
 
-
-
 let config = { 
   // baseURL: process.env.NODE_ENV === "production" ? process.env.BACKEND_SERVER + ':' + process.env.BACKEND_PORT : 'localhost:33080',
   // timeout: 60 * 1000, // Timeout

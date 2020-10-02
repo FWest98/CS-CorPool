@@ -2,14 +2,20 @@ using System;
 using System.Linq;
 using CorPool.BackEnd.Helpers;
 using CorPool.BackEnd.DatabaseModels;
+using CorPool.BackEnd.Helpers.Jwt;
 using CorPool.BackEnd.Options;
 using CorPool.BackEnd.Providers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CarPool
 {
@@ -26,13 +32,43 @@ namespace CarPool
         public void ConfigureServices(IServiceCollection services) {
             // Register Options
             services.Configure<MongoOptions>(Configuration.GetSection("Mongo"), o => o.BindNonPublicProperties = true);
+            services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication"));
 
             // Register MVC parts
             services.AddControllers();
+            services.AddHttpContextAccessor();
+
+            // Register Auth
+            services.AddIdentityCore<User>()
+                .AddUserManager<JwtUserManager>()
+                .AddUserStore<UserStore>()
+                .AddDefaultTokenProviders();
+
+            var authOptions = new AuthenticationOptions();
+            Configuration.GetSection("Authentication").Bind(authOptions);
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    options.TokenValidationParameters.IssuerSigningKey = 
+                        new JwtSigningKey(authOptions.SigningKey);
+                    options.TokenValidationParameters.ValidIssuer = authOptions.Authority;
+                    options.TokenValidationParameters.ValidAudience = authOptions.Audience;
+                    options.RequireHttpsMetadata = false;
+                });
+
+            services.AddAuthorization(options => {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .AddRequirements(new TenantAuthorizationRequirement())
+                    .Build();
+            });
 
             // Register providers
+            services.AddSingleton<ITenantAccessor, TenantAccessor>();
             services.AddSingleton<MongoDbProvider>();
             services.AddSingleton<DatabaseContext>();
+            services.AddSingleton<IAuthorizationHandler, TenantAuthorizationHandler>();
 
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
@@ -81,6 +117,8 @@ namespace CarPool
             app.UseMiddleware<TenantMiddleware>();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseCors();
 
             app.UseEndpoints(endpoints =>
