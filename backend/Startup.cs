@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client.Core.DependencyInjection;
+using StackExchange.Redis;
 
 namespace CarPool
 {
@@ -35,6 +36,7 @@ namespace CarPool
             // Register Options
             services.Configure<MongoOptions>(Configuration.GetSection("Mongo"), o => o.BindNonPublicProperties = true);
             services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication"));
+            services.Configure<RedisOptions>(Configuration.GetSection("Redis"));
 
             // Register MVC parts
             services.AddControllers();
@@ -72,8 +74,20 @@ namespace CarPool
 
             // Register other
             services.AddMongo();
+
             services.AddRabbitMqClient(Configuration.GetSection("RabbitMq"))
                 .AddProductionExchange("test", Configuration.GetSection("RabbitMq").GetSection("Exchange"));
+
+
+            var redisOptions = new RedisOptions();
+            Configuration.GetSection("Redis").Bind(redisOptions);
+
+            services.AddStackExchangeRedisCache(options => {
+                options.ConfigurationOptions = new ConfigurationOptions {
+                    Password = redisOptions.Password,
+                    EndPoints = { { redisOptions.HostName, redisOptions.Port } }
+                };
+            });
 
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {

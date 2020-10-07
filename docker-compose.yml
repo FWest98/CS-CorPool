@@ -7,6 +7,7 @@ services:
     depends_on:
      - mongo-primary
      - rabbitmq
+     - redis
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -23,6 +24,8 @@ services:
       - RabbitMq__Port=5672
       - RabbitMq__UserName=root
       - RabbitMq__Password=root
+      - Redis__HostName=redis
+      - Redis__Port=6379
   
   worker:
     scale: 1
@@ -148,6 +151,19 @@ services:
     volumes:
       - rabbitmq-data:/bitnami
 
+  # Redis
+  redis:
+    image: 'bitnami/redis:latest'
+    restart: always
+    hostname: redis
+    ports:
+      - "${REDIS_LOCAL_PORT}:6379"
+    environment:
+      - REDIS_PASSWORD=root
+    volumes:
+      - redis-data:/bitnami/redis/data
+
 volumes:
   mongo-data:
   rabbitmq-data:
+  redis-data:
