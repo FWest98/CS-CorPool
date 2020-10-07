@@ -27,4 +27,14 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets" Version="1.1.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Attributes\" />
+    <Folder Include="Providers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AspNetCoreTenant\AspNetCoreTenant.csproj" />
+    <ProjectReference Include="..\Mongo\Mongo.csproj" />
+  </ItemGroup>
 </Project>

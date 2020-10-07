@@ -1,21 +1,22 @@
 using System;
 using System.Linq;
+using Corpool.AspNetCoreTenant;
 using CorPool.BackEnd.Helpers;
-using CorPool.BackEnd.DatabaseModels;
 using CorPool.BackEnd.Helpers.Jwt;
 using CorPool.BackEnd.Options;
-using CorPool.BackEnd.Providers;
+using CorPool.Mongo;
+using CorPool.Mongo.DatabaseModels;
+using CorPool.Mongo.Helpers;
+using CorPool.Mongo.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CarPool
 {
@@ -65,10 +66,9 @@ namespace CarPool
             });
 
             // Register providers
-            services.AddSingleton<ITenantAccessor, TenantAccessor>();
-            services.AddSingleton<MongoDbProvider>();
-            services.AddSingleton<DatabaseContext>();
-            services.AddSingleton<IAuthorizationHandler, TenantAuthorizationHandler>();
+            services.AddTenanted<Tenant, TenantResolver>();
+            services.AddTenantAuth<AuthenticationOptions>();
+            services.AddMongo();
 
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
@@ -114,7 +114,7 @@ namespace CarPool
             app.UseStaticFiles();
 
             // Custom Tenant middleware
-            app.UseMiddleware<TenantMiddleware>();
+            app.UseTenanted<Tenant>();
 
             app.UseRouting();
             app.UseAuthentication();

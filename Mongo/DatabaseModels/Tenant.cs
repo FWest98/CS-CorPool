@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Corpool.AspNetCoreTenant;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace CorPool.BackEnd.DatabaseModels {
-    public class Tenant {
+namespace CorPool.Mongo.DatabaseModels {
+    public class Tenant : ITenant {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

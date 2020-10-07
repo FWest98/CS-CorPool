@@ -1,8 +1,8 @@
-﻿using CorPool.BackEnd.Providers;
+﻿using CorPool.Mongo.Providers;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
-namespace CorPool.BackEnd.DatabaseModels {
+namespace CorPool.Mongo.DatabaseModels {
     /**
      * Class to provide easy access to queryables of data sets
      */

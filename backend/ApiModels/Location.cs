@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
 namespace CorPool.BackEnd.ApiModels {
     public class Location {

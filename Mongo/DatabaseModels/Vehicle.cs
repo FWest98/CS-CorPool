@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace CorPool.BackEnd.DatabaseModels {
+namespace CorPool.Mongo.DatabaseModels {
     public class Vehicle {
         public string Brand { get; set; }
         public string Model { get; set; }

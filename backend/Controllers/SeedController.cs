@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CorPool.BackEnd.DatabaseModels;
 using CorPool.BackEnd.Helpers.Jwt;
+using CorPool.Mongo.DatabaseModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;

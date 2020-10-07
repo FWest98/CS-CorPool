@@ -1,6 +1,6 @@
 ﻿using MongoDB.Driver;
 
-namespace CorPool.BackEnd.Options {
+namespace CorPool.Mongo.Options {
     public class MongoOptions {
         public string Host { get; set; }
         public int Port { get; set; }

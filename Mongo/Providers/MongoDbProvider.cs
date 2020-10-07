@@ -1,8 +1,8 @@
-﻿using CorPool.BackEnd.Options;
+﻿using CorPool.Mongo.Options;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace CorPool.BackEnd.Providers {
+namespace CorPool.Mongo.Providers {
     public class MongoDbProvider {
         private readonly IOptionsMonitor<MongoOptions> _optionsMonitor;
         private MongoClient _client;

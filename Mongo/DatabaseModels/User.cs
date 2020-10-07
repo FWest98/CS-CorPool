@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace CorPool.BackEnd.DatabaseModels {
+namespace CorPool.Mongo.DatabaseModels {
     public class User : ITenanted {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

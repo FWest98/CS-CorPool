@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CorPool.BackEnd.Helpers;
+using Corpool.AspNetCoreTenant;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
-namespace CorPool.BackEnd.DatabaseModels {
+namespace CorPool.Mongo.DatabaseModels {
     public class UserStore : 
         IUserStore<User>, 
         IUserPasswordStore<User>, 
@@ -18,14 +18,14 @@ namespace CorPool.BackEnd.DatabaseModels {
 
         private readonly DatabaseContext _database;
         private readonly ILookupNormalizer _normalizer;
-        private readonly ITenantAccessor _tenantAccessor;
+        private readonly ITenantAccessor<Tenant> _tenantAccessor;
         private readonly ReplaceOptions _upsert = new ReplaceOptions { IsUpsert = true };
 
         // UsersQ is a tenanted queryable
         private IMongoQueryable<User> UsersQ => Users.Tenanted(_tenantAccessor.Tenant);
         private IMongoCollection<User> Users => _database.Users;
 
-        public UserStore(DatabaseContext database, ILookupNormalizer normalizer, ITenantAccessor tenantAccessor) {
+        public UserStore(DatabaseContext database, ILookupNormalizer normalizer, ITenantAccessor<Tenant> tenantAccessor) {
             _database = database;
             _normalizer = normalizer;
             _tenantAccessor = tenantAccessor;

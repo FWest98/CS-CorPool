@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>Corpool.AspNetCoreTenant</AssemblyName>
+    <RootNamespace>Corpool.AspNetCoreTenant</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.1.0" />
+  </ItemGroup>
+
+</Project>

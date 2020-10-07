@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace CorPool.BackEnd.Helpers {
+namespace Corpool.AspNetCoreTenant {
     public class TenantAuthorizationRequirement : IAuthorizationRequirement {
     }
 }
