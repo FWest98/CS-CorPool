@@ -6,6 +6,7 @@ services:
     image: corpool-backend
     depends_on:
      - mongo-primary
+     - rabbitmq
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -18,6 +19,32 @@ services:
       - Mongo__Username=root
       - Mongo__Password=root
       - Mongo__ReplicaSetName=replicaset
+      - RabbitMq__HostName=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__UserName=root
+      - RabbitMq__Password=root
+  
+  worker:
+    scale: 1
+    image: corpool-worker
+    depends_on:
+      - mongo-primary
+      - rabbitmq
+    build:
+      context: .
+      dockerfile: Worker/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - SUB_ENV=Docker
+      - Mongo__Host=mongo-primary
+      - Mongo__Port=27017
+      - Mongo__Username=root
+      - Mongo__Password=root
+      - Mongo__ReplicaSetName=replicaset
+      - RabbitMq__HostName=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__UserName=root
+      - RabbitMq__Password=root
   
   frontend_1:
     image: corpool-frontend
@@ -114,6 +141,7 @@ services:
     hostname: rabbitmq
     ports:
       - "${RABBIT_LOCAL_PORT}:5672"
+      - "${RABBIT_MANAGEMENT_LOCAL_PORT}:15672"
     environment:
       - RABBITMQ_USERNAME=root
       - RABBITMQ_PASSWORD=root

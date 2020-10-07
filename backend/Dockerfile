@@ -7,11 +7,17 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
+
+# First only copy project files to cache the restore without including all source files
+COPY ["AspNetCoreTenant/AspNetCoreTenant.csproj", "AspNetCoreTenant/"]
+COPY ["Mongo/Mongo.csproj", "Mongo/"]
 COPY ["backend/Backend.csproj", "backend/"]
 RUN dotnet restore "backend/Backend.csproj"
 COPY . .
+
+# Build
 WORKDIR "/src/backend"
-RUN dotnet build "Backend.csproj" -c Release -o /app/build
+RUN dotnet build "Backend.csproj" --no-restore -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "Backend.csproj" -c Release -o /app/publish
