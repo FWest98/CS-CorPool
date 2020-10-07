@@ -107,5 +107,19 @@ services:
       - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
 
+  # RabbitMQ
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    restart: always
+    hostname: rabbitmq
+    ports:
+      - "${RABBIT_LOCAL_PORT}:5672"
+    environment:
+      - RABBITMQ_USERNAME=root
+      - RABBITMQ_PASSWORD=root
+    volumes:
+      - rabbitmq-data:/bitnami
+
 volumes:
   mongo-data:
+  rabbitmq-data:

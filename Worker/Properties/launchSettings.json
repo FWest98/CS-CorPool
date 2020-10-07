@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "Worker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "SUB_ENV": "Kestrel" 
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "environmentVariables": {
+        "SUB_ENV": "Docker",
+        "DOTNET_ENVIRONMENT": "Development" 
+      }
+    }
+  }
+}

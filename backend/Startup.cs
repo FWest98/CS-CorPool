@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client.Core.DependencyInjection;
 
 namespace CarPool
 {
@@ -65,10 +66,14 @@ namespace CarPool
                     .Build();
             });
 
-            // Register providers
+            // Register tenanting
             services.AddTenanted<Tenant, TenantResolver>();
             services.AddTenantAuth<AuthenticationOptions>();
+
+            // Register other
             services.AddMongo();
+            services.AddRabbitMqClient(Configuration.GetSection("RabbitMq"))
+                .AddProductionExchange("test", Configuration.GetSection("RabbitMq").GetSection("Exchange"));
 
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
