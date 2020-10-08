@@ -84,7 +84,7 @@ services:
     ports:
       - "${APP_LOCAL_PORT}:80"
     volumes:
-      - "./docker/reverseproxy:/etc/nginx/templates/"
+      - "./reverseproxy:/etc/nginx/templates/"
     environment:
       - BACKEND_DOCKER_ADDRESS=backend:80
       - FRONTEND_1_DOCKER_ADDRESS=frontend_1:80
