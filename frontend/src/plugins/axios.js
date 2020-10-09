@@ -11,6 +11,7 @@ axios.defaults.baseURL = '/api'
 axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*';
 
 let config = { 
+  headers: {'Content-Type': 'application/json'},
   // baseURL: process.env.NODE_ENV === "production" ? process.env.BACKEND_SERVER + ':' + process.env.BACKEND_PORT : 'localhost:33080',
   // timeout: 60 * 1000, // Timeout
   // withCredentials: true, // Check cross-site Access-Control
@@ -18,16 +19,15 @@ let config = {
 
 const _axios = axios.create(config);
 
+// why the fack is it not intercepting 
+// https://github.com/axios/axios/issues/1383
 _axios.interceptors.request.use(
-  function(config) {
-    // Do something before request is sent
+  config => {
+    // add the JWT to the header if it is present in localStorage
     const token = localStorage.getItem('token');
-    if(token != null) {
-      config.headers = {
-        'Authorization': 'Bearer ' + token,
-      }
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   function(error) {

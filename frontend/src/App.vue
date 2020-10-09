@@ -15,7 +15,7 @@
         <v-list-item @click="logout()">
          <v-list-item-action>
            <!-- TODO fix the sign out icon -->
-            <v-icon icon="mdi-car-multiple"></v-icon>
+            <v-icon>mdi-cancel</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>logout</v-list-item-title>
@@ -36,9 +36,9 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-content>
+    <v-main>
       <router-view/>
-    </v-content>
+    </v-main>
 
     <v-footer app>
       <span>&nbsp;Web and Cloud Computing&nbsp;&copy;&nbsp;2020</span>
@@ -61,10 +61,12 @@ export default class App extends Vue {
     { title: 'Home', icon: 'home', link: '/' },
     { title: 'Offer a ride', icon: 'mdi-car-multiple', link: '/offer-a-ride' },
     { title: 'Find a ride', icon: 'mdi-account-search', link: '/find-a-ride' },
+    { title: 'Profile', icon: 'mdi-account', link: '/profile' },
   ];
-  private logout() {
+  private async logout() {
     localStorage.removeItem('token');
-    this.$router.replace({name: 'login'});
+    this.$router.currentRoute.name != 'login' ?   this.$router.replace({name: 'login'}) : null ;
+  
   }
 }
 </script>
