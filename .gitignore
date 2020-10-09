@@ -240,3 +240,6 @@ data/
 
 volumes/
 .env
+
+# don't commit credentials for OpenStack
+env.ps1
