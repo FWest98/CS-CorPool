@@ -11,6 +11,16 @@
             <v-list-item-title v-text="item.title"></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item @click="logout()">
+         <v-list-item-action>
+           <!-- TODO fix the sign out icon -->
+            <v-icon icon="mdi-car-multiple"></v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>logout</v-list-item-title>
+          </v-list-item-content>
+          </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -52,5 +62,9 @@ export default class App extends Vue {
     { title: 'Offer a ride', icon: 'mdi-car-multiple', link: '/offer-a-ride' },
     { title: 'Find a ride', icon: 'mdi-account-search', link: '/find-a-ride' },
   ];
+  private logout() {
+    localStorage.removeItem('token');
+    this.$router.replace({name: 'login'});
+  }
 }
 </script>

@@ -36,6 +36,12 @@ services:
     build:
       context: .
       dockerfile: Worker/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     environment:
       - DOTNET_ENVIRONMENT=Development
       - SUB_ENV=Docker

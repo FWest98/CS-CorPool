@@ -33,7 +33,7 @@ export default class OfferVehicle extends Vue {
   ];
 
 
-  async offerVehicle() {
+  private async offerVehicle() {
     try {
       const response = await axios.get<{}>('api/vehicles');
       this.vehicles = response.data;
