@@ -9,4 +9,4 @@ export class Confirmation {
       public pickUpPoint: Location,
     ) {}
   }
-    
+

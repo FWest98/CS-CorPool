@@ -29,7 +29,7 @@
 
 <script>
 export default {
-    data () {
+    data() {
         return {
             username: '',
             password: '',
@@ -38,16 +38,16 @@ export default {
             loading: true,
             showError: false,
             errorMessage: '',
-        }
+        };
     },
     methods: {
-        handleSubmit (e) {
+        handleSubmit(e) {
             this.submitted = true;
             if (this.username && this.password) {
                 this.getToken();
             }
         },
-        async getToken () {
+        async getToken() {
             try {
                 const response = await axios.post('/auth', {
                     username: this.username,
@@ -61,7 +61,7 @@ export default {
                 this.errorMessage += `Error while loading locations: ${e.message}.`;
             }
         },
-        async getUserDetails () {
+        async getUserDetails() {
             try {
                 const response = await axios.post('/auth', {
                     username: this.username,
@@ -74,10 +74,9 @@ export default {
                 console.log(e);
                 this.showError = true;
                 this.errorMessage += `Error while loading locations: ${e.message}.`;
-            }
-    
-        }
+            } 
+        },
 
-    }
+    },
 };
 </script>

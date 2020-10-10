@@ -37,12 +37,12 @@ import axios from 'axios';
 
 @Component({})
 export default class Home extends Vue {
-  loading: boolean = true;
-  showError: boolean = false;
-  errorMessage: string = "";
-  locations: Location[] = [];
+  public loading: boolean = true;
+  public showError: boolean = false;
+  public errorMessage: string = '';
+  public locations: Location[] = [];
 
-  async seedDatabase () {
+  public async seedDatabase() {
     console.log(axios.defaults);
     try {
       const response = await axios.get<Location[]>('/seed');
@@ -52,10 +52,6 @@ export default class Home extends Vue {
       this.errorMessage += `Error while loading locations: ${e.message}.`;
     }
     this.loading = false;
-  }
-
-  mounted() {
-    
   }
 }
 </script>

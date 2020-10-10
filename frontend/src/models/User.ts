@@ -14,7 +14,7 @@ export class User {
       public securityStamp: string,
       public phoneNumber: string,
       public phoneNumberConfirmed: boolean,
-      public vehicles: Vehicle[]
+      public vehicles: Vehicle[],
     ) {}
   }
-  
+

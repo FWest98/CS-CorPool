@@ -65,8 +65,8 @@ export default class App extends Vue {
   ];
   private async logout() {
     localStorage.removeItem('token');
-    this.$router.currentRoute.name != 'login' ?   this.$router.replace({name: 'login'}) : null ;
-  
+    this.$router.currentRoute.name !== 'login' ?   this.$router.replace({name: 'login'}) : null ;
+
   }
 }
 </script>

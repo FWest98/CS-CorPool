@@ -21,11 +21,11 @@ import axios from 'axios';
 })
 export default class OfferVehicle extends Vue {
 
-  loading: boolean = true;
-  showError: boolean = false;
-  errorMessage: string = 'Error while loading loading rides.';
-  vehicles!:{};
-  headers!: [
+  public loading: boolean = true;
+  public showError: boolean = false;
+  public errorMessage: string = 'Error while loading loading rides.';
+  public vehicles!: {};
+  public headers!: [
     { text: 'Date', value: 'date' },
     { text: 'From', value: 'from' },
     { text: 'To', value: 'to' },

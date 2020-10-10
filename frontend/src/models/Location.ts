@@ -5,4 +5,4 @@ export class Location {
       public description: string,
     ) {}
   }
-  
+
