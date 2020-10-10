@@ -60,26 +60,29 @@ export default Vue.extend({
       errorMessage: 'Error while loading loading offers.',
       offers: [] as Offer[],
       headers: [
-        { text: 'Vehicle', value: 'vehicle' },
-        { text: 'From', value: 'from' },
-        { text: 'To', value: 'to' },
-        { text: 'ArrivalTime', value: 'arrivalTime' },
+        { text: 'User', value: 'user.name' },
+        { text: 'From', value: 'from.title' },
+        { text: 'To', value: 'to.title' },
+        { text: 'Arrival Time', value: 'arrivalTime' },
+        { text: 'Vehicle', value: 'vehicle.brand' },
+        { text: 'Remaining Capacity', value: 'remainingCapacity' },
       ],
     };
   },
   methods: {
-    // getColor(spotsAvailable: number) {
-    //   if ( spotsAvailable === 0) {
-    //     return 'red';
-    //   } else if ( spotsAvailable == 0.5 && spotsAvailable > 0) {
-    //     return 'green';
-    //   } else {
-    //     return 'red';
-    //   }
-    // },
+
     async fetchRides() {
       try {
-        const response = await axios.get<Offer[]>('/offer');
+        var config = {};
+        const token = localStorage.getItem('token');
+        if (token) {
+          config = {
+            headers : {
+              Authorization : `Bearer ${token}`
+            }
+          }
+        }
+        const response = await axios.get<Offer>('/offer', config);
         this.offers = response.data;
       } catch (e) {
         this.showError = true;

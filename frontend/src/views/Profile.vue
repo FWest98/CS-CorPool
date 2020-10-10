@@ -67,12 +67,7 @@ export default Vue.extend({
             }
           }
         }
-        const response = await axios.get<User>('/auth', {
-           headers: {
-            //  'Test' : 'Test'
-             'Authorization': `bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJUZW5hbnQiOiI1ZjgxYWJmNmQ3NmYxOGUzN2Q5OTk4MDkiLCJzdWIiOiI1ZjgxYWJmNmQ3NmYxOGUzN2Q5OTk4MGIiLCJqdGkiOiI0NzhlNDY3NC0yYjgyLTRlNzctOWNkNC00MjQ5NGRkZTg0OWEiLCJpYXQiOiIxNjAyMzMzNjg5LjMyMzQ3MzIiLCJuYmYiOjE2MDIzMzM2ODksImV4cCI6MTYwMjQyMDA4OSwiaXNzIjoiY29ycG9vbCIsImF1ZCI6ImNvcnBvb2wifQ.uA1QOewSANLuM9spnOtOFtoeMkHuT2Bb6cYKALlUd44`
-            }
-        });
+        const response = await axios.get<User>('/auth', config);
 
 
         // convert json in to usable format for v-data-table    
