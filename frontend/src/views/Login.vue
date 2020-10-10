@@ -53,6 +53,7 @@ export default {
                     username: this.username,
                     password: this.password,
                 });
+
                 localStorage.setItem('token', response.data);
                 console.log('JWT Token\n', response.data);
                 this.$router.replace({name: 'home'});

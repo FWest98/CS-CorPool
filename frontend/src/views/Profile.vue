@@ -39,6 +39,7 @@
 // an example of a Vue Typescript component using Vue.extend
 import Vue from 'vue';
 import { User } from '../models/User';
+import auth from '../auth';
 
 import axios from 'axios';
 
@@ -58,17 +59,8 @@ export default Vue.extend({
   methods: {
     async fetchUser() {
       try {
-        var config = {};
-        const token = localStorage.getItem('token');
-        if (token) {
-          config = {
-            headers : {
-              Authorization : `Bearer ${token}`
-            }
-          }
-        }
+        var config = auth.getConfig();
         const response = await axios.get<User>('/auth', config);
-
 
         // convert json in to usable format for v-data-table    
         for( var i in response.data ) { 

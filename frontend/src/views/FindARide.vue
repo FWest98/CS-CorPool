@@ -50,6 +50,7 @@ import Vue from 'vue';
 import { Offer } from '../models/Offer';
 import { Location } from '../models/Location';
 import { Vehicle } from '../models/Vehicle';
+import auth from '../auth';
 import axios from 'axios';
 
 export default Vue.extend({
@@ -73,15 +74,8 @@ export default Vue.extend({
 
     async fetchRides() {
       try {
-        var config = {};
-        const token = localStorage.getItem('token');
-        if (token) {
-          config = {
-            headers : {
-              Authorization : `Bearer ${token}`
-            }
-          }
-        }
+         var config = auth.getConfig();
+
         const response = await axios.get<Offer>('/offer', config);
         this.offers = response.data;
       } catch (e) {
