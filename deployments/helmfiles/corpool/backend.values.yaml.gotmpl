@@ -48,7 +48,8 @@ secrets:
     Username: {{ .Values.mongo.userName }}
     Password: {{ .Values.mongo.userPassword }}
     ReplicaSetName: {{ .Values.mongo.replicaSetName }}
-    DatabaseName: CorPool
+    DatabaseName: {{ .Values.mongo.database }}
+    CredentialsDatabaseName: {{ .Values.mongo.database }}
   {{- with .Values.backend.secrets }}
     {{- toYaml . | nindent 2 }}
   {{- end }}
