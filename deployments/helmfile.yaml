@@ -1,0 +1,8 @@
+environments:
+    staging: {}
+    default: {}
+    production: {}
+
+helmfiles:
+  - path: helmfiles/infra.yaml.gotmpl
+  - path: helmfiles/corpool.yaml.gotmpl

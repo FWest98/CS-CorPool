@@ -8,6 +8,8 @@
 *.user
 *.userosscache
 *.sln.docstates
+.envrc
+WCC2020_team_C-openrc.sh
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

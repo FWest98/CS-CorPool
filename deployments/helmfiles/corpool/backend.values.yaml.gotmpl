@@ -1,0 +1,54 @@
+replicaCount: 3
+image:
+  repository: "registry.gitlab.com/FWest98/corpool"
+  tag: {{ .Values.backend.imageTag }}
+  pullPolicy: Always
+
+nameOverride: {{ .Values.backend.name }}
+fullnameOverride: {{ .Values.backend.name }}
+
+service:
+  type: ClusterIP
+  port: 80
+
+probes:
+  enabled: true
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domain }}
+  path: /api
+  hosts:
+    - {{ .Values.domain }}
+  tls:
+    - secretName: {{ .Values.backend.name }}-cert
+      hosts:
+        - {{ .Values.domain }}
+
+environment:
+  - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
+    value: true
+  - name: ASPNETCORE_URLS
+    value: http://+:80
+  - name: ASPNETCORE_ENVIRONMENT
+    value: {{ .Values.backend.dotNetEnvironment | default "Development" }}
+  - name: SUB_ENV
+    value: Docker
+  {{- with .Values.backend.environment }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+
+secrets:
+  Mongo:
+    Host: mongodb-headless
+    Port: "27017"
+    Username: {{ .Values.mongo.userName }}
+    Password: {{ .Values.mongo.userPassword }}
+    ReplicaSetName: {{ .Values.mongo.replicaSetName }}
+    DatabaseName: {{ .Values.mongo.database }}
+  {{- with .Values.backend.secrets }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}

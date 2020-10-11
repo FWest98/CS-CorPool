@@ -1,0 +1,22 @@
+{{ readFile "templates/bases.yaml" }}
+
+values:
+  - namespace: corpool
+
+---
+
+releases:
+    # MongoDB Cluster
+  - name: mongodb
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/mongodb
+    values:
+      - corpool/mongodb.values.yaml.gotmpl
+
+  - name: backend
+    namespace: {{ .Values.namespace }}
+    chart: ../../backend/charts/backend
+    needs:
+      - {{ .Values.namespace }}/mongodb
+    values:
+      - corpool/backend.values.yaml.gotmpl

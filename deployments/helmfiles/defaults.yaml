@@ -1,0 +1,4 @@
+helmDefaults:
+  recreatePods: false
+  wait: true
+  createNamespace: true
