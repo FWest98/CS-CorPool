@@ -53,9 +53,9 @@ workflow:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   
-    before_script:
-        # Set credentials in the Kaniko config
-        - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_REGISTRY_PASSWORD}\"}}}" > /kaniko/.docker/config.json
+  before_script:
+    # Set credentials in the Kaniko config
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_REGISTRY_PASSWORD}\"}}}" > /kaniko/.docker/config.json
 
 build-backend-debug:
   extends:
