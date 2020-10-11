@@ -1,6 +1,6 @@
 replicaCount: 3
 image:
-  repository: "registry.gitlab.com/FWest98/corpool"
+  repository: "registry.gitlab.com/fwest98/corpool"
   tag: {{ .Values.backend.imageTag }}
   pullPolicy: Always
 
@@ -48,7 +48,7 @@ secrets:
     Username: {{ .Values.mongo.userName }}
     Password: {{ .Values.mongo.userPassword }}
     ReplicaSetName: {{ .Values.mongo.replicaSetName }}
-    DatabaseName: {{ .Values.mongo.database }}
+    DatabaseName: CorPool
   {{- with .Values.backend.secrets }}
     {{- toYaml . | nindent 2 }}
   {{- end }}

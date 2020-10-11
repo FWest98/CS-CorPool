@@ -13,7 +13,11 @@ COPY ["AspNetCoreTenant/AspNetCoreTenant.csproj", "AspNetCoreTenant/"]
 COPY ["Mongo/Mongo.csproj", "Mongo/"]
 COPY ["backend/Backend.csproj", "backend/"]
 RUN dotnet restore "backend/Backend.csproj"
-COPY [".", "./"]
+
+# Only copy these directories to save on recompilations
+COPY ["AspNetCoreTenant/", "AspNetCoreTenant/"]
+COPY ["Mongo/", "Mongo/"]
+COPY ["backend/", "backend/"]
 
 # Build
 WORKDIR "/src/backend"
