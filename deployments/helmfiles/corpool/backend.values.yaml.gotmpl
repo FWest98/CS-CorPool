@@ -28,6 +28,7 @@ ingress:
     - secretName: {{ .Values.backend.name }}-cert
       hosts:
         - {{ .Values.domain }}
+        - '"*.{{ .Values.domain }}"'
 
 environment:
   - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
