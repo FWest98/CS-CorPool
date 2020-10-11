@@ -9,8 +9,8 @@ releases:
     chart: ../charts/cloudflare
     values:
       - domain: {{ .Values.domain }}
-    secrets:
-      - infra/cloudflare.secrets.yaml
+        secrets:
+          CF_API_TOKEN: {{ .Values.cloudflare }}
 
   # Cert-Manager for LetsEncrypt
   - name: cert-manager
@@ -26,7 +26,7 @@ releases:
     needs:
       - cert-manager/cert-manager
     values:
-      - email: me@floriswesterman.nl
+      - infra/letsencrypt.values.yaml.gotmpl
 
   # Cinder volumes for storage
   # but this does not yet work :(
