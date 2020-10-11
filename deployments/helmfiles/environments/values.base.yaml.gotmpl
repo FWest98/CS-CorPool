@@ -6,11 +6,7 @@ backend:
   secrets: []
 
 mongo:
-  rootPassword: {{ randAlphaNum 10 | b64enc | quote }}
   userName: corpool
-  userPassword: {{ randAlphaNum 10 | b64enc | quote }}
   database: CorPool
-
-  replicaSetKey: {{ randAlphaNum 10 | b64enc | quote }}
   replicaSetName: rs0
   scale: 3
