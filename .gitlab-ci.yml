@@ -92,7 +92,7 @@ build-deployer:
   # First we need to add the private PGP key to our keyring
   before_script:
     - cat $GPG_PRIVATEKEY | gpg --batch --import
-    - echo $GPG_PASSPHRASE | gpg --batch --always-trust --yes --pasphrase-fd 0 --pinentry-mode=loopback -s $(mktemp)
+    - echo $GPG_PASSPHRASE | gpg --batch --always-trust --yes --passphrase-fd 0 --pinentry-mode=loopback -s $(mktemp)
   
   script:
     - helmfile --environment ${ENVIRONMENT} -f deployments/helmfile.yaml sync
