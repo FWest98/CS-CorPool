@@ -81,7 +81,7 @@ build-worker-debug:
     - .for-develop
 
   script:
-    - /kaniko/executor --context "${CI_PROJECT_DIR}/Worker" --dockerfile "${CI_PROJECT_DIR}/Worker/Dockerfile" --destination "${REPOSITORY}/worker:${TAG}" --cache=true
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/Worker/Dockerfile" --destination "${REPOSITORY}/worker:${TAG}" --cache=true
 
 build-deployer:
   extends:
