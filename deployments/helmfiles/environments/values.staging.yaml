@@ -1,5 +1,4 @@
 domain: staging.corpool.nl
 
 backend:
-  imageTag: develop
   dotNetEnvironment: Development

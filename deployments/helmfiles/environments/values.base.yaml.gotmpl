@@ -1,9 +1,20 @@
 clusterIssuer: letsencrypt
+repository: {{ requiredEnv "REPOSITORY" }}
 
 backend:
   name: backend
+  imageTag: {{ requiredEnv "TAG" }}
   environment: []
-  secrets: []
+  secrets: {}
+
+cert:
+  name: corpool-cert
+
+frontend:
+  name: frontend
+  imageTag: {{ requiredEnv "TAG" }}
+  environment: []
+  secrets: {}
 
 mongo:
   userName: corpool

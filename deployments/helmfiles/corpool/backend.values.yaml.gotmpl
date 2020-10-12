@@ -1,6 +1,6 @@
 replicaCount: 3
 image:
-  repository: "registry.gitlab.com/fwest98/corpool"
+  repository: {{ .Values.repository }}/backend
   tag: {{ .Values.backend.imageTag }}
   pullPolicy: Always
 
@@ -25,7 +25,7 @@ ingress:
     - {{ .Values.domain }}
     - '"*.{{ .Values.domain }}"' # Doubly quoted to escape the asterisk when in use
   tls:
-    - secretName: {{ .Values.backend.name }}-cert
+    - secretName: {{ .Values.cert.name }}
       hosts:
         - {{ .Values.domain }}
         - '"*.{{ .Values.domain }}"'

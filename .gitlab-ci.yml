@@ -53,6 +53,10 @@ workflow:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   
+  variables:
+    REGISTRY: ${CI_REGISTRY_IMAGE}
+    TAG: ${CI_COMMIT_REF_SLUG}
+
   before_script:
     # Set credentials in the Kaniko config
     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_REGISTRY_PASSWORD}\"}}}" > /kaniko/.docker/config.json
@@ -63,14 +67,22 @@ build-backend-debug:
     - .for-develop
   
   script:
-    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile" --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}" --cache=true
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile" --destination "${REGISTRY}/backend:${TAG}" --cache=true
+
+build-frontend-debug:
+  extends:
+    - .linux-build
+    - .for-develop
+
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile" --destination "${REGISTRY}/frontend:${TAG}" --cache=true
 
 build-deployer:
   extends:
     - .linux-build
   
   script:
-    - /kaniko/executor --context "${CI_PROJECT_DIR}/deployments/deployer" --dockerfile "${CI_PROJECT_DIR}/deployments/deployer/Dockerfile" --destination "${CI_REGISTRY_IMAGE}:deployer" --cache=true
+    - /kaniko/executor --context "${CI_PROJECT_DIR}/deployments/deployer" --dockerfile "${CI_PROJECT_DIR}/deployments/deployer/Dockerfile" --destination "${REGISTRY}/deployer:latest" --cache=true
 
   # We only build the deployer automatically if the dockerfile has changed, otherwise manual
   rules:
@@ -85,7 +97,7 @@ build-deployer:
 .deploy:
   extends: .on-linux
   stage: Deployment
-  image: "${CI_REGISTRY_IMAGE}:deployer"
+  image: "${CI_REGISTRY_IMAGE}/deployer:latest"
   needs:
     - build-deployer
   

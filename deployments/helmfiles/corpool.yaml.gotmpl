@@ -13,9 +13,17 @@ releases:
     values:
       - corpool/mongodb.values.yaml.gotmpl
 
+    # Frontend server
+  - name: frontend
+    namespace: {{ .Values.namespace }}
+    chart: ../../frontend/chart
+    values:
+      - corpool/frontend.values.yaml.gotmpl
+
+    # Backend server
   - name: backend
     namespace: {{ .Values.namespace }}
-    chart: ../../backend/charts/backend
+    chart: ../../backend/chart
     needs:
       - {{ .Values.namespace }}/mongodb
     values:
