@@ -1,5 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: normal
+  REPOSITORY: ${CI_REGISTRY_IMAGE}
+  TAG: ${CI_COMMIT_REF_SLUG}
 
 stages:
   - Build
@@ -52,10 +54,6 @@ workflow:
     # We use Kaniko as a build tool since for now we use Kubernetes Gitlab Runner
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  
-  variables:
-    REPOSITORY: ${CI_REGISTRY_IMAGE}
-    TAG: ${CI_COMMIT_REF_SLUG}
 
   before_script:
     # Set credentials in the Kaniko config
