@@ -50,8 +50,9 @@ import Vue from 'vue';
 import { Offer } from '../models/Offer';
 import { Location } from '../models/Location';
 import { Vehicle } from '../models/Vehicle';
-import auth from '../auth';
+
 import axios from 'axios';
+import getConfig from '../auth';
 
 export default Vue.extend({
   data() {
@@ -59,7 +60,7 @@ export default Vue.extend({
       loading: true,
       showError: false,
       errorMessage: 'Error while loading loading offers.',
-      offers: [] as Offer[],
+      offers: [],
       headers: [
         { text: 'User', value: 'user.name' },
         { text: 'From', value: 'from.title' },
@@ -74,9 +75,9 @@ export default Vue.extend({
 
     async fetchRides() {
       try {
-         var config = auth.getConfig();
+         var config = getConfig();
 
-        const response = await axios.get<Offer>('/offer', config);
+        const response = await axios.get('/offer', config);
         this.offers = response.data;
       } catch (e) {
         this.showError = true;

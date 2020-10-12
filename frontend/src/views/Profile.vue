@@ -39,7 +39,7 @@
 // an example of a Vue Typescript component using Vue.extend
 import Vue from 'vue';
 import { User } from '../models/User';
-import auth from '../auth';
+import getConfig from '../auth';
 
 import axios from 'axios';
 
@@ -49,7 +49,7 @@ export default Vue.extend({
       loading: true,
       showError: false,
       errorMessage: 'Error while loading loading userdata.',
-      user: [],
+      user: [{}],
       headers: [
         { text: 'Key', value: 'key' },
         { text: 'Value', value: 'value' },
@@ -59,13 +59,13 @@ export default Vue.extend({
   methods: {
     async fetchUser() {
       try {
-        var config = auth.getConfig();
-        const response = await axios.get<User>('/auth', config);
+        var config = getConfig();
+        const response = await axios.get('/auth', config);
 
         // convert json in to usable format for v-data-table    
         for( var i in response.data ) { 
           if( response.data.hasOwnProperty( i ) ){ 
-            this.user.push( {key: i, value: response.data[i] } );
+            this.user.push( { "key": i, "value": response.data[i] } );
           }
         }
   
