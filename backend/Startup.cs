@@ -41,6 +41,7 @@ namespace CarPool
             // Register MVC parts
             services.AddControllers();
             services.AddHttpContextAccessor();
+            services.AddHealthChecks();
 
             // Register Auth
             services.AddIdentityCore<User>()
@@ -131,17 +132,16 @@ namespace CarPool
             }
 
             app.UseStaticFiles();
+            app.UseRouting();
 
             // Custom Tenant middleware
             app.UseTenanted<Tenant>();
-
-            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

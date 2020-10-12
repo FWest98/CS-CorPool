@@ -45,13 +45,22 @@ namespace CorPool.BackEnd.Controllers {
                 return Unauthorized();
 
             // Authorized, return JWT
-            return Ok(await _userManager.GenerateJwtToken(user));
+            var (token, expiry) = await _userManager.GenerateJwtToken(user);
+            return Ok(new Models.TokenModel {
+                Key = token,
+                Expiry = expiry
+            });
         }
 
         public class Models {
             public class LoginModel {
                 public string username { get; set; }
                 public string password { get; set; }
+            }
+
+            public class TokenModel {
+                public string Key { get; set; }
+                public DateTime Expiry { get; set; }
             }
         }
     }

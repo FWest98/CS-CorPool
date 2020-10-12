@@ -20,7 +20,7 @@ namespace CorPool.BackEnd.Helpers.Jwt {
             _authOptions = authOptions.Value;
         }
 
-        public Task<string> GenerateJwtToken(User user) {
+        public Task<(string, DateTime)> GenerateJwtToken(User user) {
             var claims = new List<Claim> {
                 new Claim("Tenant", user.TenantId),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
@@ -28,16 +28,18 @@ namespace CorPool.BackEnd.Helpers.Jwt {
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64)
             };
 
+            var expiry = DateTime.Now.AddDays(1);
+
             var jwt = new JwtSecurityToken(
                 issuer: _authOptions.Authority,
                 audience: _authOptions.Audience,
                 claims: claims,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddDays(1),
+                expires: expiry,
                 signingCredentials: new SigningCredentials(new JwtSigningKey(_authOptions.SigningKey), SecurityAlgorithms.HmacSha256)
             );
 
-            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(jwt));
+            return Task.FromResult((new JwtSecurityTokenHandler().WriteToken(jwt), expiry));
         }
     }
 }
