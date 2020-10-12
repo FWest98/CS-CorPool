@@ -13,6 +13,13 @@ releases:
     values:
       - corpool/mongodb.values.yaml.gotmpl
 
+    # RabbitMQ cluster
+  - name: rabbitmq
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/rabbitmq
+    values:
+      - corpool/rabbitmq.values.yaml.gotmpl
+
     # Frontend server
   - name: frontend
     namespace: {{ .Values.namespace }}
@@ -26,5 +33,16 @@ releases:
     chart: ../../backend/chart
     needs:
       - {{ .Values.namespace }}/mongodb
+      - {{ .Values.namespace }}/rabbitmq
     values:
       - corpool/backend.values.yaml.gotmpl
+
+    # Workers
+  - name: worker
+    namespace: {{ .Values.namespace }}
+    chart: ../../Worker/chart
+    needs:
+      - {{ .Values.namespace }}/mongodb
+      - {{ .Values.namespace }}/rabbitmq
+    values:
+      - corpool/worker.values.yaml.gotmpl

@@ -21,3 +21,13 @@ mongo:
   database: CorPool
   replicaSetName: rs0
   scale: 3
+
+rabbitmq:
+  userName: corpool
+  scale: 3
+
+worker:
+  name: worker
+  imageTag: {{ requiredEnv "TAG" }}
+  environment: []
+  secrets: {}

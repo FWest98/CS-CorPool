@@ -53,6 +53,9 @@ spec:
                   key: {{ $key }}
             {{- end }}
             {{- end }}
+            {{- with .Values.environment }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.imagePullSecrets }}

@@ -54,6 +54,8 @@ services:
       - RabbitMq__Port=5672
       - RabbitMq__UserName=root
       - RabbitMq__Password=root
+      - HealthCheck__Enabled=true
+      - HealthCheck__FilePath=/tmp/health
   
   frontend_1:
     image: corpool-frontend

@@ -75,6 +75,14 @@ build-frontend-debug:
   script:
     - /kaniko/executor --context "${CI_PROJECT_DIR}/frontend" --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile" --destination "${REPOSITORY}/frontend:${TAG}" --cache=true
 
+build-worker-debug:
+  extends:
+    - .linux-build
+    - .for-develop
+
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}/Worker" --dockerfile "${CI_PROJECT_DIR}/Worker/Dockerfile" --destination "${REPOSITORY}/worker:${TAG}" --cache=true
+
 build-deployer:
   extends:
     - .linux-build

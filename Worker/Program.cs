@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client.Core.DependencyInjection;
 
@@ -32,11 +33,24 @@ namespace Worker {
                     if (args != null) config.AddCommandLine(args);
                 })
                 .ConfigureServices((hostContext, services) => {
+                    // Configure services
+
+                    // Add hosted service
                     services.AddHostedService<Worker>();
+
+                    // Add RabbitMq Client
                     services.AddRabbitMqClient(hostContext.Configuration.GetSection("RabbitMq"))
                         .AddConsumptionExchange("test",
                             hostContext.Configuration.GetSection("RabbitMq").GetSection("Exchange"))
                         .AddAsyncMessageHandlerSingleton<MessageHandler>("routing");
+
+                    // Add health check
+                    services.AddHealthChecks();
+                    services.Configure<HealthCheckPublisherOptions>(options => {
+                        options.Period = TimeSpan.FromSeconds(5);
+                    });
+                    services.Configure<HealthCheckPublisher.HealthCheckOptions>(hostContext.Configuration.GetSection("HealthCheck"));
+                    services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
                 });
     }
 }

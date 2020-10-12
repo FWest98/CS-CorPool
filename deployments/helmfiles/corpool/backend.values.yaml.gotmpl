@@ -43,7 +43,7 @@ environment:
     {{- toYaml . | nindent 2 }}
   {{- end }}
 
-secrets:
+secrets: # Configuration for Mongo, Redis, and RabbitMQ
   Mongo:
     Host: mongodb-headless
     Port: "27017"
@@ -52,6 +52,11 @@ secrets:
     ReplicaSetName: {{ .Values.mongo.replicaSetName }}
     DatabaseName: {{ .Values.mongo.database }}
     CredentialsDatabaseName: {{ .Values.mongo.database }}
+  RabbitMq:
+    HostName: rabbitmq-headless
+    Port: "5672"
+    UserName: {{ .Values.rabbitmq.userName }}
+    Password: {{ .Values.rabbitmq.userPassword }}
   {{- with .Values.backend.secrets }}
     {{- toYaml . | nindent 2 }}
   {{- end }}
