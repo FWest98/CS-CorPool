@@ -16,11 +16,3 @@ slave:
 sentinel:
   enabled: true
   masterSet: {{ .Values.redis.serviceName }}
-
-securityContext:
-  sysctls:
-    - name: net.core.somaxconn
-      value: "10000"
-
-podSecurityPolicy:
-  create: true
