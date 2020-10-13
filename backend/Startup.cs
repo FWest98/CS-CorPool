@@ -16,8 +16,10 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client.Core.DependencyInjection;
+using RabbitMQ.Client.Core.DependencyInjection.Services;
 using StackExchange.Redis;
 
 namespace CarPool
@@ -41,7 +43,14 @@ namespace CarPool
             // Register MVC parts
             services.AddControllers();
             services.AddHttpContextAccessor();
-            services.AddHealthChecks();
+            services.AddHealthChecks()
+                .AddCheck<RedisCacheHealthCheck>("Redis", HealthStatus.Unhealthy)
+                .AddCheck<MongoHealthCheck>("Mongo", HealthStatus.Unhealthy)
+                .AddRabbitMQ(
+                    sp => sp.GetRequiredService<IQueueService>().Connection,
+                    "RabbitMQ",
+                    HealthStatus.Unhealthy
+                );
 
             // Register Auth
             services.AddIdentityCore<User>()
@@ -79,7 +88,6 @@ namespace CarPool
             services.AddRabbitMqClient(Configuration.GetSection("RabbitMq"))
                 .AddProductionExchange("test", Configuration.GetSection("RabbitMq").GetSection("Exchange"));
 
-
             var redisOptions = new RedisOptions();
             Configuration.GetSection("Redis").Bind(redisOptions);
 
@@ -92,8 +100,6 @@ namespace CarPool
                 // If we are connecting to a sentinel
                 if (!string.IsNullOrWhiteSpace(redisOptions.ServiceName)) {
                     options.ConfigurationOptions.ServiceName = redisOptions.ServiceName;
-                    //options.ConfigurationOptions.CommandMap = CommandMap.Sentinel;
-                    //options.ConfigurationOptions.TieBreaker = "";
                 }
             });
 

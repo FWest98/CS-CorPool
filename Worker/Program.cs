@@ -1,9 +1,11 @@
 using System;
+using CorPool.Mongo.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client.Core.DependencyInjection;
+using RabbitMQ.Client.Core.DependencyInjection.Services;
 
 namespace Worker {
     public class Program {
@@ -45,7 +47,15 @@ namespace Worker {
                         .AddAsyncMessageHandlerSingleton<MessageHandler>("routing");
 
                     // Add health check
-                    services.AddHealthChecks();
+                    services.AddHealthChecks()
+                        .AddCheck<MongoHealthCheck>("Mongo", HealthStatus.Unhealthy)
+                        .AddRabbitMQ(
+                            sp => sp.GetRequiredService<IQueueService>().Connection,
+                            "RabbitMQ",
+                            HealthStatus.Unhealthy
+                        );
+
+                    // Health check publisher
                     services.Configure<HealthCheckPublisherOptions>(options => {
                         options.Period = TimeSpan.FromSeconds(5);
                     });
