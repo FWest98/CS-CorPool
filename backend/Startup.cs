@@ -92,8 +92,8 @@ namespace CarPool
                 // If we are connecting to a sentinel
                 if (!string.IsNullOrWhiteSpace(redisOptions.ServiceName)) {
                     options.ConfigurationOptions.ServiceName = redisOptions.ServiceName;
-                    options.ConfigurationOptions.CommandMap = CommandMap.Sentinel;
-                    options.ConfigurationOptions.TieBreaker = "";
+                    //options.ConfigurationOptions.CommandMap = CommandMap.Sentinel;
+                    //options.ConfigurationOptions.TieBreaker = "";
                 }
             });
 

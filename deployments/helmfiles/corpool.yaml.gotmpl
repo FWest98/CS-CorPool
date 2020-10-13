@@ -41,6 +41,7 @@ releases:
     needs:
       - {{ .Values.namespace }}/mongodb
       - {{ .Values.namespace }}/rabbitmq
+      - {{ .Values.namespace }}/redis
     values:
       - corpool/backend.values.yaml.gotmpl
 
