@@ -86,9 +86,15 @@ namespace CarPool
             services.AddStackExchangeRedisCache(options => {
                 options.ConfigurationOptions = new ConfigurationOptions {
                     Password = redisOptions.Password,
-                    ServiceName = redisOptions.ServiceName,
                     EndPoints = { { redisOptions.HostName, redisOptions.Port } }
                 };
+
+                // If we are connecting to a sentinel
+                if (!string.IsNullOrWhiteSpace(redisOptions.ServiceName)) {
+                    options.ConfigurationOptions.ServiceName = redisOptions.ServiceName;
+                    options.ConfigurationOptions.CommandMap = CommandMap.Sentinel;
+                    options.ConfigurationOptions.TieBreaker = "";
+                }
             });
 
             // Optionally configure nginx reverse proxy compatibility

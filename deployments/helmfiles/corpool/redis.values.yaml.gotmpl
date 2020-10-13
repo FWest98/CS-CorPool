@@ -1,6 +1,6 @@
 cluster:
   enabled: true
-  slaveCount: {{ sub (.Values.redis.scale | int) 1 }}
+  slaveCount: {{ .Values.redis.scale }}
 
 usePassword: true
 password: {{ .Values.redis.password }}
