@@ -8,5 +8,6 @@ namespace CorPool.BackEnd.Options {
         public string HostName { get; set; }
         public int Port { get; set; }
         public string Password { get; set; }
+        public string ServiceName { get; set; } = null;
     }
 }

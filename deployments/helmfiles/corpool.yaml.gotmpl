@@ -20,6 +20,13 @@ releases:
     values:
       - corpool/rabbitmq.values.yaml.gotmpl
 
+    # Redis cluster
+  - name: redis
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/redis
+    values:
+      - corpool/redis.values.yaml.gotmpl
+
     # Frontend server
   - name: frontend
     namespace: {{ .Values.namespace }}

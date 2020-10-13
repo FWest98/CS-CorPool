@@ -26,6 +26,10 @@ rabbitmq:
   userName: corpool
   scale: 3
 
+redis:
+  scale: 3
+  serviceName: corpool
+
 worker:
   name: worker
   imageTag: {{ requiredEnv "TAG" }}

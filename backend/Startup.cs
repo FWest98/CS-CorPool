@@ -86,6 +86,7 @@ namespace CarPool
             services.AddStackExchangeRedisCache(options => {
                 options.ConfigurationOptions = new ConfigurationOptions {
                     Password = redisOptions.Password,
+                    ServiceName = redisOptions.ServiceName,
                     EndPoints = { { redisOptions.HostName, redisOptions.Port } }
                 };
             });
