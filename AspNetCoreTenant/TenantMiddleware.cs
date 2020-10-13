@@ -1,7 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Corpool.AspNetCoreTenant {
     public class TenantMiddleware<TTenant> where TTenant : class, ITenant {
@@ -19,7 +17,7 @@ namespace Corpool.AspNetCoreTenant {
 
                 // Check if endpoint has tenanted attribute and cancel request if so
                 // Similar to what AuthZMiddleware does, bypassing the attribute filters :(
-                var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+                var endpoint = context.GetEndpoint();
                 if (endpoint?.Metadata.GetMetadata<TenantedAttribute>() != null && tenant == null) {
                     context.Response.StatusCode = 400;
                     await context.Response.WriteAsync("No valid tenant specified");

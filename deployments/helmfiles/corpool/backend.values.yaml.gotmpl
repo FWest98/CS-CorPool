@@ -7,6 +7,8 @@ image:
 nameOverride: {{ .Values.backend.name }}
 fullnameOverride: {{ .Values.backend.name }}
 
+buildID: {{ randAlphaNum 5 | quote }} # always re-release the charts
+
 service:
   type: ClusterIP
   port: 80

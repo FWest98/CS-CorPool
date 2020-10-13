@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System;
+using MongoDB.Driver;
 
 namespace CorPool.Mongo.Options {
     public class MongoOptions {
@@ -14,7 +15,8 @@ namespace CorPool.Mongo.Options {
         public MongoClientSettings GetSettings() {
             var settings = new MongoClientSettings {
                 Credential = MongoCredential.CreateCredential(CredentialsDatabaseName, Username, Password),
-                Server = new MongoServerAddress(Host, Port)
+                Server = new MongoServerAddress(Host, Port),
+                ConnectTimeout = TimeSpan.FromSeconds(10)
             };
 
             if (!string.IsNullOrWhiteSpace(ReplicaSetName)) {

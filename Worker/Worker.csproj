@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-Worker-32D49115-E3D7-4A17-A178-BD07B0B5D2D6</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AssemblyName>CorPool.Worker</AssemblyName>
+    <RootNamespace>CorPool.Worker</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

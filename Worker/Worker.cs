@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Core.DependencyInjection.Services;
 
-namespace Worker {
+namespace CorPool.Worker {
     public class Worker : BackgroundService {
         private readonly ILogger<Worker> _logger;
         private readonly IQueueService _queueService;
@@ -21,7 +19,7 @@ namespace Worker {
             _queueService.StartConsuming();
             while (!stoppingToken.IsCancellationRequested) {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(10000, stoppingToken);
             }
         }
     }

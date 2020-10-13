@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/core/runtime:3.1-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
@@ -11,11 +11,7 @@ COPY ["AspNetCoreTenant/AspNetCoreTenant.csproj", "AspNetCoreTenant/"]
 COPY ["Mongo/Mongo.csproj", "Mongo/"]
 COPY ["Worker/Worker.csproj", "Worker/"]
 RUN dotnet restore "Worker/Worker.csproj"
-
-# Only copy these directories to save on recompilations
-COPY ["AspNetCoreTenant/", "AspNetCoreTenant/"]
-COPY ["Mongo/", "Mongo/"]
-COPY ["Worker/", "Worker/"]
+COPY . .
 
 # Build
 WORKDIR "/src/Worker"
