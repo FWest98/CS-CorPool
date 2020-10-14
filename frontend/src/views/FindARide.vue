@@ -4,7 +4,7 @@
       <v-row>
         <v-col>
           <h1>Find a ride</h1>
-          <p>Here you can view all existing offers</p>
+          <p>Here you can view all existing offers!!!</p>
 
           <v-data-table
             :headers="headers"
@@ -50,7 +50,9 @@ import Vue from 'vue';
 import { Offer } from '../models/Offer';
 import { Location } from '../models/Location';
 import { Vehicle } from '../models/Vehicle';
+
 import axios from 'axios';
+import getConfig from '../auth';
 
 export default Vue.extend({
   data() {
@@ -58,28 +60,24 @@ export default Vue.extend({
       loading: true,
       showError: false,
       errorMessage: 'Error while loading loading offers.',
-      offers: [] as Offer[],
+      offers: [],
       headers: [
-        { text: 'Vehicle', value: 'vehicle' },
-        { text: 'From', value: 'from' },
-        { text: 'To', value: 'to' },
-        { text: 'ArrivalTime', value: 'arrivalTime' },
+        { text: 'User', value: 'user.name' },
+        { text: 'From', value: 'from.title' },
+        { text: 'To', value: 'to.title' },
+        { text: 'Arrival Time', value: 'arrivalTime' },
+        { text: 'Vehicle', value: 'vehicle.brand' },
+        { text: 'Remaining Capacity', value: 'remainingCapacity' },
       ],
     };
   },
   methods: {
-    // getColor(spotsAvailable: number) {
-    //   if ( spotsAvailable === 0) {
-    //     return 'red';
-    //   } else if ( spotsAvailable == 0.5 && spotsAvailable > 0) {
-    //     return 'green';
-    //   } else {
-    //     return 'red';
-    //   }
-    // },
+
     async fetchRides() {
       try {
-        const response = await axios.get<Offer[]>('/offer');
+         var config = getConfig();
+
+        const response = await axios.get('/offer', config);
         this.offers = response.data;
       } catch (e) {
         this.showError = true;

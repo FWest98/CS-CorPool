@@ -1,0 +1,17 @@
+architecture: replicaset
+auth:
+  enabled: true
+  rootPassword: {{ .Values.mongo.rootPassword }}
+  username: {{ .Values.mongo.userName }}
+  password: {{ .Values.mongo.userPassword }}
+  replicaSetKey: {{ .Values.mongo.replicaSetKey }}
+  database: {{ .Values.mongo.database }}
+
+replicaSetName: {{ .Values.mongo.replicaSetName }}
+replicaCount: {{ .Values.mongo.scale }}
+
+persistence:
+  enabled: false
+
+arbiter:
+  enabled: false

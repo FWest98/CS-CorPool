@@ -1,0 +1,19 @@
+environments:
+  default:
+    values:
+      - environments/values.base.yaml.gotmpl
+      - environments/values.develop.yaml
+    secrets:
+      - environments/secrets.base.yaml
+  staging:
+    values:
+      - environments/values.base.yaml.gotmpl
+      - environments/values.staging.yaml
+    secrets:
+      - environments/secrets.base.yaml
+  production:
+    values:
+      - environments/values.base.yaml.gotmpl
+      - environments/values.production.yaml
+    secrets:
+      - environments/secrets.base.yaml

@@ -15,6 +15,25 @@ Vue.config.productionTip = false;
 
 Vue.filter('date', dateFilter);
 
+// https://jasonwatmore.com/post/2018/07/06/vue-vuex-jwt-authentication-tutorial-example
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ['/login', '/register'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('token');
+  const now = new Date();
+
+  // TODO check expiration date here
+  // now.getTime() > loggedIn.expiry
+
+  if (authRequired && !loggedIn) {
+    localStorage.removeItem('token');
+    return next('/login');
+  }
+
+  next();
+});
+
 
 new Vue({
   vuetify,

@@ -1,0 +1,42 @@
+replicaCount: 3
+image:
+  repository: {{ .Values.repository }}/frontend
+  tag: {{ .Values.frontend.imageTag }}
+  pullPolicy: Always
+
+nameOverride: {{ .Values.frontend.name }}
+fullnameOverride: {{ .Values.frontend.name }}
+
+buildID: {{ randAlphaNum 5 | quote }} # always re-release the charts
+
+service:
+  type: ClusterIP
+  port: 80
+
+probes:
+  enabled: true
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-managerio/cluster-issuer: {{ .Values.clusterIssuer }}
+  path: /
+  hosts:
+    - {{ .Values.domain }}
+    - '"*.{{ .Values.domain }}"' # Doubly quotes to escape the asterisk when in use
+  tls:
+    - secretName: {{ .Values.cert.name }}
+      hosts:
+        - {{ .Values.domain }}
+        - '"*.{{ .Values.domain }}"'
+
+{{- with .Values.frontend.environment }}
+environment:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+
+{{- with .Values.frontend.secrets }}
+secrets:
+  {{- toYaml . | nindent 2 }}
+{{- end }}

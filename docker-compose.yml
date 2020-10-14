@@ -6,6 +6,8 @@ services:
     image: corpool-backend
     depends_on:
      - mongo-primary
+     - rabbitmq
+     - redis
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -18,8 +20,44 @@ services:
       - Mongo__Username=root
       - Mongo__Password=root
       - Mongo__ReplicaSetName=replicaset
+      - RabbitMq__HostName=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__UserName=root
+      - RabbitMq__Password=root
+      - Redis__HostName=redis
+      - Redis__Port=6379
   
-  frontend:
+  worker:
+    scale: 1
+    image: corpool-worker
+    depends_on:
+      - mongo-primary
+      - rabbitmq
+    build:
+      context: .
+      dockerfile: Worker/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - SUB_ENV=Docker
+      - Mongo__Host=mongo-primary
+      - Mongo__Port=27017
+      - Mongo__Username=root
+      - Mongo__Password=root
+      - Mongo__ReplicaSetName=replicaset
+      - RabbitMq__HostName=rabbitmq
+      - RabbitMq__Port=5672
+      - RabbitMq__UserName=root
+      - RabbitMq__Password=root
+      - HealthCheck__Enabled=true
+      - HealthCheck__FilePath=/tmp/health
+  
+  frontend_1:
     image: corpool-frontend
     depends_on:
       - backend
@@ -27,20 +65,41 @@ services:
       context: frontend
       dockerfile: Dockerfile
 
+  frontend_2:
+    image: corpool-frontend
+    depends_on:
+      - backend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+
+  frontend_3:
+    image: corpool-frontend
+    depends_on:
+      - backend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    
+
   revproxy:
     image: nginx
     depends_on:
       - backend
-      - frontend
+      - frontend_1
+      - frontend_2
+      - frontend_3
     ports:
       - "${APP_LOCAL_PORT}:80"
     volumes:
-      - "./docker/reverseproxy:/etc/nginx/templates/"
+      - "./reverseproxy:/etc/nginx/templates/"
     environment:
       - BACKEND_DOCKER_ADDRESS=backend:80
-      - FRONTEND_DOCKER_ADDRESS=frontend:80
-      - BACKEND_LOCAL_ADDRESS=${HOST_IP}:${BACKEND_LOCAL_PORT}
-      - FRONTEND_LOCAL_ADDRESS=${HOST_IP}:${FRONTEND_LOCAL_PORT}
+      - FRONTEND_1_DOCKER_ADDRESS=frontend_1:80
+      - FRONTEND_2_DOCKER_ADDRESS=frontend_2:80
+      - FRONTEND_3_DOCKER_ADDRESS=frontend_3:80
+      - BACKEND_LOCAL_ADDRESS=${HOST_IP}:${BACKEND_LOCAL_PORT} # local dev environment
+      - FRONTEND_LOCAL_ADDRESS=${HOST_IP}:${FRONTEND_LOCAL_PORT} # local dev environment
 
   # MongoDB replication set
   mongo-primary:
@@ -86,5 +145,33 @@ services:
       - MONGODB_INITIAL_PRIMARY_HOST=mongo-primary
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=root
 
+  # RabbitMQ
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    restart: always
+    hostname: rabbitmq
+    ports:
+      - "${RABBIT_LOCAL_PORT}:5672"
+      - "${RABBIT_MANAGEMENT_LOCAL_PORT}:15672"
+    environment:
+      - RABBITMQ_USERNAME=root
+      - RABBITMQ_PASSWORD=root
+    volumes:
+      - rabbitmq-data:/bitnami
+
+  # Redis
+  redis:
+    image: 'bitnami/redis:latest'
+    restart: always
+    hostname: redis
+    ports:
+      - "${REDIS_LOCAL_PORT}:6379"
+    environment:
+      - REDIS_PASSWORD=root
+    volumes:
+      - redis-data:/bitnami/redis/data
+
 volumes:
   mongo-data:
+  rabbitmq-data:
+  redis-data:

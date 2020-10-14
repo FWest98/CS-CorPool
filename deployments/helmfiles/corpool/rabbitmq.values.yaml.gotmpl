@@ -1,0 +1,18 @@
+auth:
+  username: {{ .Values.rabbitmq.userName }}
+  password: {{ .Values.rabbitmq.userPassword }}
+  erlangCookie: {{ .Values.rabbitmq.erlang }}
+
+replicaCount: {{ .Values.rabbitmq.scale }}
+
+ingress:
+  enabled: true
+  certManager: true
+  hostname: rabbitmq.{{ .Values.domain }}
+  tls: true
+  existingSecret: {{ .Values.cert.name }} # re-use wildcard cert
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer }}
+
+persistence:
+  enabled: false

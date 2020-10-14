@@ -8,6 +8,9 @@
 *.user
 *.userosscache
 *.sln.docstates
+.envrc
+WCC2020_team_C-openrc.sh
+kubeconfig.yaml
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -240,3 +243,6 @@ data/
 
 volumes/
 .env
+
+# don't commit credentials for OpenStack
+env.ps1

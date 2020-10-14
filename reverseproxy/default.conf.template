@@ -1,0 +1,29 @@
+# First try to contact a local development instance before using the Dockerized fallback
+upstream backend { 
+    server ${BACKEND_LOCAL_ADDRESS};
+    server ${BACKEND_DOCKER_ADDRESS} backup;
+}
+
+upstream frontend {
+
+    # default - round-robin — requests to the application servers are distributed in a round-robin fashion
+    # ip_hash; # a hash-function is used to determine what server should be selected for the next request (based on the client’s IP address).
+    # least_conn; # next request is assigned to the server with the least number of active connections
+    # server ${FRONTEND_LOCAL_ADDRESS} weight=3; # higher weight means more requests
+
+    server ${FRONTEND_LOCAL_ADDRESS};
+    server ${FRONTEND_1_DOCKER_ADDRESS} backup;
+    server ${FRONTEND_2_DOCKER_ADDRESS} backup;
+    server ${FRONTEND_3_DOCKER_ADDRESS} backup;
+}
+
+server {
+    location /api {
+        proxy_set_header Host $host;
+        proxy_pass http://backend/api;
+    }
+
+    location / {
+        proxy_pass http://frontend/;
+    }
+}

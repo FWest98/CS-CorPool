@@ -1,0 +1,37 @@
+clusterIssuer: letsencrypt
+repository: {{ requiredEnv "REPOSITORY" }}
+
+backend:
+  name: backend
+  imageTag: {{ requiredEnv "TAG" }}
+  environment: []
+  secrets: {}
+
+cert:
+  name: corpool-cert
+
+frontend:
+  name: frontend
+  imageTag: {{ requiredEnv "TAG" }}
+  environment: []
+  secrets: {}
+
+mongo:
+  userName: corpool
+  database: CorPool
+  replicaSetName: rs0
+  scale: 3
+
+rabbitmq:
+  userName: corpool
+  scale: 3
+
+redis:
+  scale: 3
+  serviceName: corpool
+
+worker:
+  name: worker
+  imageTag: {{ requiredEnv "TAG" }}
+  environment: []
+  secrets: {}

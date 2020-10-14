@@ -1,3 +1,130 @@
-hello-world:
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+  REPOSITORY: ${CI_REGISTRY_IMAGE}
+  TAG: ${CI_COMMIT_REF_SLUG}
+
+stages:
+  - Build
+  - Deployment
+
+### RUNNER TEMPLATES
+
+.on-linux:
+  tags:
+    - linux
+    - docker
+
+### RULES TEMPLATES
+
+# Global settings
+workflow:
+  rules:
+    # Don't run WIP branches
+    - if: '$CI_COMMIT_REF_NAME =~ /-wip$/'
+      when: never
+    # Don't run tags
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    # Do run on merge requests and main branches
+    - if: '$CI_MERGE_REQUEST_IID'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "master"'
+      when: always
+    # Default
+    - when: never
+
+# Templates for jobs only running on specific branches
+.for-develop:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+
+.for-master:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+### BUILD STUFF
+
+.linux-build:
+  extends: .on-linux
+  stage: Build
+
+  image:
+    # We use Kaniko as a build tool since for now we use Kubernetes Gitlab Runner
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+
+  before_script:
+    # Set credentials in the Kaniko config
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_REGISTRY_PASSWORD}\"}}}" > /kaniko/.docker/config.json
+
+build-backend-debug:
+  extends:
+    - .linux-build
+    - .for-develop
+  
   script:
-    - echo "Hello World 2"
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile" --destination "${REPOSITORY}/backend:${TAG}" --cache=true
+
+build-frontend-debug:
+  extends:
+    - .linux-build
+    - .for-develop
+
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}/frontend" --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile" --destination "${REPOSITORY}/frontend:${TAG}" --cache=true
+
+build-worker-debug:
+  extends:
+    - .linux-build
+    - .for-develop
+
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/Worker/Dockerfile" --destination "${REPOSITORY}/worker:${TAG}" --cache=true
+
+build-deployer:
+  extends:
+    - .linux-build
+  
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}/deployments/deployer" --dockerfile "${CI_PROJECT_DIR}/deployments/deployer/Dockerfile" --destination "${REPOSITORY}/deployer:latest" --cache=true
+
+  # We only build the deployer automatically if the dockerfile has changed, otherwise manual
+  rules:
+    - changes:
+      - deployments/deployer/*
+      when: on_success
+    - when: manual
+      allow_failure: true
+
+### DEPLOYMENT STUFF
+
+.deploy:
+  extends: .on-linux
+  stage: Deployment
+  image: "${CI_REGISTRY_IMAGE}/deployer:latest"
+  needs:
+    - build-deployer
+  
+  # First we need to add the private PGP key to our keyring
+  before_script:
+    - cat $GPG_PRIVATEKEY | gpg --batch --import
+    - echo $GPG_PASSPHRASE | gpg --batch --always-trust --yes --passphrase-fd 0 --pinentry-mode=loopback -s $(mktemp)
+  
+  script:
+    - helmfile --environment ${ENVIRONMENT} -f deployments/helmfile.yaml sync
+
+deploy-develop:
+  extends:
+    - .deploy
+    - .for-develop
+
+  needs:
+    - build-backend-debug
+  
+  variables:
+    ENVIRONMENT: staging
+  environment:
+    name: staging
+    url: https://staging.corpool.nl/

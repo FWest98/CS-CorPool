@@ -1,0 +1,18 @@
+cluster:
+  enabled: true
+  slaveCount: {{ .Values.redis.scale }}
+
+usePassword: true
+password: {{ .Values.redis.password }}
+
+master:
+  persistence:
+    enabled: false
+
+slave:
+  persistence:
+    enabled: false
+
+sentinel:
+  enabled: true
+  masterSet: {{ .Values.redis.serviceName }}

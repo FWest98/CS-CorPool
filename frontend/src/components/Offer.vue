@@ -41,17 +41,17 @@ const namespace: string = 'offer';
 
 @Component
 export default class Offer extends Vue {
-  vehicleBrand: string = "";
-  vehicleModel: string = "";
-  vehicleColor: string = "";
+  public vehicleBrand: string = '';
+  public vehicleModel: string = '';
+  public vehicleColor: string = '';
 
-  locationFromTitle: string = "";
-  locationFromDescription: string = "";
+  public locationFromTitle: string = '';
+  public locationFromDescription: string = '';
 
-  locationToTitle: string = "";
-  locationToDescription: string = "";
-  
-  arrivalTime: string = "";
+  public locationToTitle: string = '';
+  public locationToDescription: string = '';
+
+  public arrivalTime: string = '';
 
   @Getter('currentCount', { namespace })
   private currentCount!: number;
@@ -60,16 +60,9 @@ export default class Offer extends Vue {
   @Action('reset', { namespace })
   private resetCounter: any;
 
-  private increment() {
-    this.incrementCounter();
-  }
-  private reset() {
-    this.resetCounter();
-  }
-
-  async offerVehicle() {
+  public async offerVehicle() {
     try {
-      // TODO send fields of form 
+      // TODO send fields of form
       const response = await axios.get<{}>('/vehicles');
       // this.vehicles = response.data;
     } catch (e) {
@@ -79,8 +72,15 @@ export default class Offer extends Vue {
     // this.loading = false;
   }
 
-  mounted(){
+  public mounted() {
     this.arrivalTime = Date();
+  }
+
+  private increment() {
+    this.incrementCounter();
+  }
+  private reset() {
+    this.resetCounter();
   }
 
 }

@@ -1,0 +1,69 @@
+replicaCount: 3
+image:
+  repository: {{ .Values.repository }}/backend
+  tag: {{ .Values.backend.imageTag }}
+  pullPolicy: Always
+
+nameOverride: {{ .Values.backend.name }}
+fullnameOverride: {{ .Values.backend.name }}
+
+buildID: {{ randAlphaNum 5 | quote }} # always re-release the charts
+
+service:
+  type: ClusterIP
+  port: 80
+
+probes:
+  enabled: true
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer }}
+#    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domain }} # This will only be possible once we have a load balancing solution
+  path: /api
+  hosts:
+    - {{ .Values.domain }}
+    - '"*.{{ .Values.domain }}"' # Doubly quoted to escape the asterisk when in use
+  tls:
+    - secretName: {{ .Values.cert.name }}
+      hosts:
+        - {{ .Values.domain }}
+        - '"*.{{ .Values.domain }}"'
+
+environment:
+  - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
+    value: "true"
+  - name: ASPNETCORE_URLS
+    value: http://+:80
+  - name: ASPNETCORE_ENVIRONMENT
+    value: {{ .Values.backend.dotNetEnvironment | default "Development" }}
+  - name: SUB_ENV
+    value: Docker
+  {{- with .Values.backend.environment }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+
+secrets: # Configuration for Mongo, Redis, and RabbitMQ
+  Mongo:
+    Host: mongodb-headless
+    Port: "27017"
+    Username: {{ .Values.mongo.userName }}
+    Password: {{ .Values.mongo.userPassword }}
+    ReplicaSetName: {{ .Values.mongo.replicaSetName }}
+    DatabaseName: {{ .Values.mongo.database }}
+    CredentialsDatabaseName: {{ .Values.mongo.database }}
+  RabbitMq:
+    HostName: rabbitmq-headless
+    Port: "5672"
+    UserName: {{ .Values.rabbitmq.userName }}
+    Password: {{ .Values.rabbitmq.userPassword }}
+  Redis:
+    HostName: redis-headless
+    Port: "26379"
+    Password: {{ .Values.redis.password }}
+    ServiceName: {{ .Values.redis.serviceName }}
+  {{- with .Values.backend.secrets }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}

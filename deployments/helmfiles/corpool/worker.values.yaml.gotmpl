@@ -1,0 +1,41 @@
+replicaCount: 3
+image:
+  repository: {{ .Values.repository }}/worker
+  tag: {{ .Values.worker.imageTag }}
+  pullPolicy: Always
+
+nameOverride: {{ .Values.worker.name }}
+fullnameOverride: {{ .Values.worker.name }}
+
+buildID: {{ randAlphaNum 5 | quote }} # always re-release the charts
+
+probes:
+  enabled: true
+  path: /tmp/health
+
+environment:
+  - name: DOTNET_ENVIRONMENT
+    value: {{ .Values.worker.dotNetEnvironment | default "Development" }}
+  - name: SUB_ENV
+    value: Docker
+  {{- with .Values.worker.environment }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+
+secrets: # Configuration for Mongo and RabbitMQ
+  Mongo:
+    Host: mongodb-headless
+    Port: "27017"
+    Username: {{ .Values.mongo.userName }}
+    Password: {{ .Values.mongo.userPassword }}
+    ReplicaSetName: {{ .Values.mongo.replicaSetName }}
+    DatabaseName: {{ .Values.mongo.database }}
+    CredentialsDatabaseName: {{ .Values.mongo.database }}
+  RabbitMq:
+    HostName: rabbitmq-headless
+    Port: "5672"
+    UserName: {{ .Values.rabbitmq.userName }}
+    Password: {{ .Values.rabbitmq.userPassword }}
+  {{- with .Values.worker.secrets }}
+    {{- toYaml . | nindent 2 }}
+  {{- end }}

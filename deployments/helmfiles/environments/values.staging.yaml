@@ -1,0 +1,7 @@
+domain: staging.corpool.nl
+
+backend:
+  dotNetEnvironment: Development
+
+worker:
+  dotNetEnvironment: Development

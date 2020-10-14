@@ -1,0 +1,8 @@
+---
+creation_rules:
+  - pgp: >-
+      EB40A06C490BB16DC28F75406394EA2F6F8F92A1,
+      F2BAEFEA8412AD3316D915BFA4F47A8D8097481B
+    # These are, respecitvely:
+    # Floris' private key
+    # GitLab CI key

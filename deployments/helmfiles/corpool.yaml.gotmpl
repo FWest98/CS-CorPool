@@ -1,0 +1,56 @@
+{{ readFile "templates/bases.yaml" }}
+
+values:
+  - namespace: corpool
+
+---
+
+releases:
+    # MongoDB Cluster
+  - name: mongodb
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/mongodb
+    values:
+      - corpool/mongodb.values.yaml.gotmpl
+
+    # RabbitMQ cluster
+  - name: rabbitmq
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/rabbitmq
+    values:
+      - corpool/rabbitmq.values.yaml.gotmpl
+
+    # Redis cluster
+  - name: redis
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/redis
+    values:
+      - corpool/redis.values.yaml.gotmpl
+
+    # Frontend server
+  - name: frontend
+    namespace: {{ .Values.namespace }}
+    chart: ../../frontend/chart
+    values:
+      - corpool/frontend.values.yaml.gotmpl
+
+    # Backend server
+  - name: backend
+    namespace: {{ .Values.namespace }}
+    chart: ../../backend/chart
+    needs:
+      - {{ .Values.namespace }}/mongodb
+      - {{ .Values.namespace }}/rabbitmq
+      - {{ .Values.namespace }}/redis
+    values:
+      - corpool/backend.values.yaml.gotmpl
+
+    # Workers
+  - name: worker
+    namespace: {{ .Values.namespace }}
+    chart: ../../Worker/chart
+    needs:
+      - {{ .Values.namespace }}/mongodb
+      - {{ .Values.namespace }}/rabbitmq
+    values:
+      - corpool/worker.values.yaml.gotmpl

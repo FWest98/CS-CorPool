@@ -14,11 +14,13 @@ export default new Router({
       component: Home,
     },
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('./views/Login.vue'),
+    },
+    {
       path: '/offer-a-ride',
       name: 'offer-a-ride',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('./views/OfferARide.vue'),
     },
     {
@@ -26,5 +28,11 @@ export default new Router({
       name: 'find-a-ride',
       component: () => import('./views/FindARide.vue'),
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('./views/Profile.vue'),
+    },
   ],
 });
+

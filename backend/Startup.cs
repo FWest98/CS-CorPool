@@ -1,15 +1,26 @@
 using System;
 using System.Linq;
+using Corpool.AspNetCoreTenant;
 using CorPool.BackEnd.Helpers;
-using CorPool.BackEnd.DatabaseModels;
+using CorPool.BackEnd.Helpers.Jwt;
 using CorPool.BackEnd.Options;
-using CorPool.BackEnd.Providers;
+using CorPool.Mongo;
+using CorPool.Mongo.DatabaseModels;
+using CorPool.Mongo.Helpers;
+using CorPool.Mongo.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client.Core.DependencyInjection;
+using RabbitMQ.Client.Core.DependencyInjection.Services;
+using StackExchange.Redis;
 
 namespace CarPool
 {
@@ -26,13 +37,71 @@ namespace CarPool
         public void ConfigureServices(IServiceCollection services) {
             // Register Options
             services.Configure<MongoOptions>(Configuration.GetSection("Mongo"), o => o.BindNonPublicProperties = true);
+            services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication"));
+            services.Configure<RedisOptions>(Configuration.GetSection("Redis"));
 
             // Register MVC parts
             services.AddControllers();
+            services.AddHttpContextAccessor();
+            services.AddHealthChecks()
+                .AddCheck<RedisCacheHealthCheck>("Redis", HealthStatus.Unhealthy)
+                .AddCheck<MongoHealthCheck>("Mongo", HealthStatus.Unhealthy)
+                .AddRabbitMQ(
+                    sp => sp.GetRequiredService<IQueueService>().Connection,
+                    "RabbitMQ",
+                    HealthStatus.Unhealthy
+                );
 
-            // Register providers
-            services.AddSingleton<MongoDbProvider>();
-            services.AddSingleton<DatabaseContext>();
+            // Register Auth
+            services.AddIdentityCore<User>()
+                .AddUserManager<JwtUserManager>()
+                .AddUserStore<UserStore>()
+                .AddDefaultTokenProviders();
+
+            var authOptions = new AuthenticationOptions();
+            Configuration.GetSection("Authentication").Bind(authOptions);
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    options.TokenValidationParameters.IssuerSigningKey = 
+                        new JwtSigningKey(authOptions.SigningKey);
+                    options.TokenValidationParameters.ValidIssuer = authOptions.Authority;
+                    options.TokenValidationParameters.ValidAudience = authOptions.Audience;
+                    options.RequireHttpsMetadata = false;
+                });
+
+            services.AddAuthorization(options => {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .AddRequirements(new TenantAuthorizationRequirement())
+                    .Build();
+            });
+
+            // Register tenanting
+            services.AddTenanted<Tenant, TenantResolver>();
+            services.AddTenantAuth<AuthenticationOptions>();
+
+            // Register other
+            services.AddMongo();
+
+            services.AddRabbitMqClient(Configuration.GetSection("RabbitMq"))
+                .AddProductionExchange("test", Configuration.GetSection("RabbitMq").GetSection("Exchange"));
+
+            var redisOptions = new RedisOptions();
+            Configuration.GetSection("Redis").Bind(redisOptions);
+
+            services.AddStackExchangeRedisCache(options => {
+                options.ConfigurationOptions = new ConfigurationOptions {
+                    Password = redisOptions.Password,
+                    EndPoints = { { redisOptions.HostName, redisOptions.Port } }
+                };
+
+                // If we are connecting to a sentinel
+                if (!string.IsNullOrWhiteSpace(redisOptions.ServiceName)) {
+                    options.ConfigurationOptions.ServiceName = redisOptions.ServiceName;
+                }
+            });
 
             // Optionally configure nginx reverse proxy compatibility
             if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
@@ -76,15 +145,16 @@ namespace CarPool
             }
 
             app.UseStaticFiles();
+            app.UseRouting();
 
             // Custom Tenant middleware
-            app.UseMiddleware<TenantMiddleware>();
-
-            app.UseRouting();
+            app.UseTenanted<Tenant>();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseCors();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

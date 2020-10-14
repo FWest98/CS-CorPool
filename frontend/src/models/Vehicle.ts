@@ -6,4 +6,4 @@ export class Vehicle {
       public capacity: number,
     ) {}
   }
-  
+
