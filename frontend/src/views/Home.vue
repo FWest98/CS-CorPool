@@ -43,7 +43,6 @@ export default class Home extends Vue {
   public locations: Location[] = [];
 
   public async seedDatabase() {
-    console.log(axios.defaults);
     try {
       const response = await axios.get<Location[]>('/seed');
       this.locations = response.data;
