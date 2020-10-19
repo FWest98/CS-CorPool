@@ -20,7 +20,7 @@ namespace CorPool.Mongo.DatabaseModels {
         [BsonRequired]
         public Location To { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public List<Confirmation> Confirmations { get; set; }
+        public List<Confirmation> Confirmations { get; set; } = new List<Confirmation>();
 
         [BsonIgnore]
         public int RemainingCapacity => Vehicle.Capacity - Confirmations.Count - 1; // -1 for driver

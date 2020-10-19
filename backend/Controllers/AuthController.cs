@@ -1,32 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Corpool.AspNetCoreTenant;
 using CorPool.BackEnd.Helpers.Jwt;
-using CorPool.BackEnd.Options;
 using CorPool.Mongo.DatabaseModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace CorPool.BackEnd.Controllers {
     [Tenanted]
     public class AuthController : AbstractApiController {
-        private readonly IOptionsSnapshot<AuthenticationOptions> _authOptions;
-        private readonly JwtUserManager _userManager;
-
-        public AuthController(DatabaseContext database, IOptionsSnapshot<AuthenticationOptions> authOptions, JwtUserManager userManager) : base(database) {
-            _authOptions = authOptions;
-            _userManager = userManager;
-        }
+        public AuthController(Lazy<DatabaseContext> database, Lazy<JwtUserManager> userManager, Lazy<IDistributedCache> cache) : base(database, userManager, cache) { }
 
         [Authorize]
         public async Task<User> Get() {
             // Get current user
-            return await _userManager.GetUserAsync(User);
+            return await User;
         }
 
         [HttpPost]
@@ -35,17 +24,17 @@ namespace CorPool.BackEnd.Controllers {
                 return BadRequest();
 
             // Obtain user
-            var user = await _userManager.FindByNameAsync(login.username);
-            user ??= await _userManager.FindByEmailAsync(login.username);
+            var user = await UserManager.FindByNameAsync(login.username);
+            user ??= await UserManager.FindByEmailAsync(login.username);
             if (user == null)
                 return Unauthorized();
 
             // Check password
-            if (!await _userManager.CheckPasswordAsync(user, login.password))
+            if (!await UserManager.CheckPasswordAsync(user, login.password))
                 return Unauthorized();
 
             // Authorized, return JWT
-            var (token, expiry) = await _userManager.GenerateJwtToken(user);
+            var (token, expiry) = await UserManager.GenerateJwtToken(user);
             return Ok(new Models.TokenModel {
                 Key = token,
                 Expiry = expiry

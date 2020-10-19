@@ -1,7 +1,9 @@
-﻿using DatabaseModels = CorPool.Mongo.DatabaseModels;
+﻿using System.ComponentModel.DataAnnotations;
+using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
 namespace CorPool.BackEnd.ApiModels {
     public class Location {
+        [Required]
         public string Title { get; set; }
         public string Description { get; set; }
 
