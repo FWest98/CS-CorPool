@@ -11,7 +11,11 @@ COPY ["AspNetCoreTenant/AspNetCoreTenant.csproj", "AspNetCoreTenant/"]
 COPY ["Mongo/Mongo.csproj", "Mongo/"]
 COPY ["Worker/Worker.csproj", "Worker/"]
 RUN dotnet restore "Worker/Worker.csproj"
-COPY . .
+
+# Only copy these directories to save on recompilations
+COPY ["AspNetCoreTenant/", "AspNetCoreTenant/"]
+COPY ["Mongo/", "Mongo/"]
+COPY ["Worker/", "Worker/"]
 
 # Build
 WORKDIR "/src/Worker"
