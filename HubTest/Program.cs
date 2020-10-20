@@ -29,9 +29,10 @@ namespace CorPool.HubTest {
 
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl($"{url}/api/ride/find",
-                    HttpTransportType.WebSockets, 
+                    HttpTransportType.WebSockets,
                     s => {
                         s.Headers.Add("Authorization", $"Bearer {token}");
+                        s.SkipNegotiation = true;
                     })
                 .WithAutomaticReconnect()
                 .AddJsonProtocol()

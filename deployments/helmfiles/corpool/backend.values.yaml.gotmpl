@@ -21,6 +21,9 @@ ingress:
   annotations:
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer }}
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Connection $connection_upgrade;
+      proxy_set_header Upgrade $http_upgrade;
 #    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domain }} # This will only be possible once we have a load balancing solution
   path: /api
   hosts:
