@@ -59,16 +59,15 @@ export default Vue.extend({
   methods: {
     async fetchUser() {
       try {
-        var config = getConfig();
+        const config = getConfig();
         const response = await axios.get('/auth', config);
 
-        // convert json in to usable format for v-data-table    
-        for( var i in response.data ) { 
-          if( response.data.hasOwnProperty( i ) ){ 
-            this.user.push( { "key": i, "value": response.data[i] } );
+        // convert json in to usable format for v-data-table
+        for ( const i in response.data ) {
+          if ( response.data.hasOwnProperty( i ) ) {
+            this.user.push( { key: i, value: response.data[i] } );
           }
         }
-  
       } catch (e) {
         this.showError = true;
         this.errorMessage = `Error while loading user: ${e.message}.`;

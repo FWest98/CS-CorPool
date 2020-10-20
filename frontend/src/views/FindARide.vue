@@ -75,8 +75,7 @@ export default Vue.extend({
 
     async fetchRides() {
       try {
-         var config = getConfig();
-
+        const config = getConfig();
         const response = await axios.get('/offer', config);
         this.offers = response.data;
       } catch (e) {

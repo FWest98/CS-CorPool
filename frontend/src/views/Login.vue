@@ -54,11 +54,11 @@ export default {
                     password: this.password,
                 });
 
-                localStorage.setItem('token', response.data);
-                console.log('JWT Token\n', response.data);
+                localStorage.setItem('token', JSON.stringify(response.data));
+                // console.log('JWT Token\n', response.data);
                 this.$router.replace({name: 'home'});
             } catch (e) {
-                console.log(e);
+                // console.log(e);
                 this.showError = true;
                 this.errorMessage += `Error while loading locations: ${e.message}.`;
             }
@@ -73,10 +73,10 @@ export default {
                 this.$router.replace({name: 'offer-a-ride'});
 
             } catch (e) {
-                console.log(e);
+                // console.log(e);
                 this.showError = true;
                 this.errorMessage += `Error while loading locations: ${e.message}.`;
-            } 
+            }
         },
 
     },
