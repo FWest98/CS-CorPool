@@ -36,6 +36,11 @@ secrets: # Configuration for Mongo and RabbitMQ
     Port: "5672"
     UserName: {{ .Values.rabbitmq.userName }}
     Password: {{ .Values.rabbitmq.userPassword }}
+  Redis:
+    HostName: redis-headless
+    Port: "26379"
+    Password: {{ .Values.redis.password }}
+    ServiceName: {{ .Values.redis.serviceName }}
   {{- with .Values.worker.secrets }}
     {{- toYaml . | nindent 2 }}
   {{- end }}

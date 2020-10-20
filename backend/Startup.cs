@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Corpool.AspNetCoreTenant;
 using CorPool.BackEnd.Helpers;
 using CorPool.BackEnd.Helpers.Jwt;
@@ -8,6 +9,9 @@ using CorPool.Mongo;
 using CorPool.Mongo.DatabaseModels;
 using CorPool.Mongo.Helpers;
 using CorPool.Mongo.Options;
+using CorPool.Shared;
+using CorPool.Shared.Hubs;
+using CorPool.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -18,14 +22,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Core.DependencyInjection;
 using RabbitMQ.Client.Core.DependencyInjection.Services;
 using StackExchange.Redis;
 
-namespace CarPool
+namespace CorPool.BackEnd
 {
     public class Startup
     {
+        private const string RidesHubUrl = "/api/ride/find";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,40 +42,51 @@ namespace CarPool
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            // Register Options
-            services.Configure<MongoOptions>(Configuration.GetSection("Mongo"), o => o.BindNonPublicProperties = true);
-            services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication"));
-            services.Configure<RedisOptions>(Configuration.GetSection("Redis"));
+            // Shared services setup
+            services.ConfigureSharedServices(Configuration);
 
-            // Register MVC parts
+            // Register tenanting
+            services.AddTenanted<Tenant, TenantResolver>();
+            services.AddTenantAuth<AuthenticationOptions>();
+
+            // Register web parts
             services.AddControllers();
             services.AddHttpContextAccessor();
-            services.AddHealthChecks()
-                .AddCheck<RedisCacheHealthCheck>("Redis", HealthStatus.Unhealthy)
-                .AddCheck<MongoHealthCheck>("Mongo", HealthStatus.Unhealthy)
-                .AddRabbitMQ(
-                    sp => sp.GetRequiredService<IQueueService>().Connection,
-                    "RabbitMQ",
-                    HealthStatus.Unhealthy
-                );
+            services.AddReverseProxy();
 
             // Register Auth
+            services.Configure<AuthenticationOptions>(Configuration.GetSection("Authentication"));
+
             services.AddIdentityCore<User>()
                 .AddUserManager<JwtUserManager>()
                 .AddUserStore<UserStore>()
                 .AddDefaultTokenProviders();
 
-            var authOptions = new AuthenticationOptions();
-            Configuration.GetSection("Authentication").Bind(authOptions);
-
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
-                    options.TokenValidationParameters.IssuerSigningKey = 
-                        new JwtSigningKey(authOptions.SigningKey);
-                    options.TokenValidationParameters.ValidIssuer = authOptions.Authority;
-                    options.TokenValidationParameters.ValidAudience = authOptions.Audience;
+                .AddJwtBearer();
+
+            // Add JWT configuration
+            services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme).PostConfigure<IOptions<AuthenticationOptions>>(
+                (options, authOptions) => {
+                    options.TokenValidationParameters.IssuerSigningKey =
+                        new JwtSigningKey(authOptions.Value.SigningKey);
+                    options.TokenValidationParameters.ValidIssuer = authOptions.Value.Authority;
+                    options.TokenValidationParameters.ValidAudience = authOptions.Value.Audience;
                     options.RequireHttpsMetadata = false;
+
+                    // Add WebSocket auth
+                    options.Events = new JwtBearerEvents();
+                    options.Events.OnMessageReceived += context => {
+                        var token = context.Request.Query["access_token"];
+
+                        // Check if request to hub
+                        if (!string.IsNullOrWhiteSpace(token) &&
+                            context.HttpContext.Request.Path.StartsWithSegments(RidesHubUrl))
+                            context.Token = token;
+
+                        return Task.CompletedTask;
+                    };
                 });
 
             services.AddAuthorization(options => {
@@ -78,55 +96,9 @@ namespace CarPool
                     .Build();
             });
 
-            // Register tenanting
-            services.AddTenanted<Tenant, TenantResolver>();
-            services.AddTenantAuth<AuthenticationOptions>();
-
             // Register other
-            services.AddMongo();
-
-            services.AddRabbitMqClient(Configuration.GetSection("RabbitMq"))
-                .AddProductionExchange("test", Configuration.GetSection("RabbitMq").GetSection("Exchange"));
-
-            var redisOptions = new RedisOptions();
-            Configuration.GetSection("Redis").Bind(redisOptions);
-
-            services.AddStackExchangeRedisCache(options => {
-                options.ConfigurationOptions = new ConfigurationOptions {
-                    Password = redisOptions.Password,
-                    EndPoints = { { redisOptions.HostName, redisOptions.Port } }
-                };
-
-                // If we are connecting to a sentinel
-                if (!string.IsNullOrWhiteSpace(redisOptions.ServiceName)) {
-                    options.ConfigurationOptions.ServiceName = redisOptions.ServiceName;
-                }
-            });
-
-            // Optionally configure nginx reverse proxy compatibility
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_FORWARDEDHEADERS_ENABLED") == "true") {
-                services.Configure<ForwardedHeadersOptions>(options => {
-                    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-
-                    // We clear the whitelist as we have explicitly enabled proxying now
-                    options.KnownNetworks.Clear();
-                    options.KnownProxies.Clear();
-                });
-            }
-
-            // Allow lazy-loading
-            foreach (var service in services.ToList()) {
-                var lazyType = typeof(Lazy<>);
-                lazyType = lazyType.MakeGenericType(service.ServiceType);
-
-                var lazyDepType = typeof(LazyDep<>);
-                lazyDepType = lazyDepType.MakeGenericType(service.ServiceType);
-
-                services.Add(new ServiceDescriptor(lazyType, lazyDepType, service.Lifetime));
-            }
-
-            // Fallback
-            services.AddTransient(typeof(Lazy<>), typeof(LazyDep<>));
+            services.AddRabbitMqProducer(Configuration.GetSection("RabbitMq"));
+            services.AddLazyLoading();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -154,6 +126,7 @@ namespace CarPool
             app.UseCors();
 
             app.UseEndpoints(endpoints => {
+                endpoints.MapHub<RideHub>(RidesHubUrl);
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapControllerRoute(
                     name: "default",

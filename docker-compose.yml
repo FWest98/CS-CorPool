@@ -33,6 +33,7 @@ services:
     depends_on:
       - mongo-primary
       - rabbitmq
+      - redis
     build:
       context: .
       dockerfile: Worker/Dockerfile
@@ -49,6 +50,8 @@ services:
       - RabbitMq__Port=5672
       - RabbitMq__UserName=root
       - RabbitMq__Password=root
+      - Redis__HostName=redis
+      - Redis__Port=6379
       - HealthCheck__Enabled=true
       - HealthCheck__FilePath=/tmp/health
   

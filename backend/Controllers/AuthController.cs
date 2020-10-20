@@ -20,17 +20,17 @@ namespace CorPool.BackEnd.Controllers {
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Models.LoginModel login) {
-            if (string.IsNullOrWhiteSpace(login.username) || string.IsNullOrWhiteSpace(login.password))
+            if (string.IsNullOrWhiteSpace(login.Username) || string.IsNullOrWhiteSpace(login.Password))
                 return BadRequest();
 
             // Obtain user
-            var user = await UserManager.FindByNameAsync(login.username);
-            user ??= await UserManager.FindByEmailAsync(login.username);
+            var user = await UserManager.FindByNameAsync(login.Username);
+            user ??= await UserManager.FindByEmailAsync(login.Username);
             if (user == null)
                 return Unauthorized();
 
             // Check password
-            if (!await UserManager.CheckPasswordAsync(user, login.password))
+            if (!await UserManager.CheckPasswordAsync(user, login.Password))
                 return Unauthorized();
 
             // Authorized, return JWT
@@ -43,8 +43,8 @@ namespace CorPool.BackEnd.Controllers {
 
         public class Models {
             public class LoginModel {
-                public string username { get; set; }
-                public string password { get; set; }
+                public string Username { get; set; }
+                public string Password { get; set; }
             }
 
             public class TokenModel {

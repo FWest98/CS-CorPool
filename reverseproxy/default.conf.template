@@ -18,6 +18,14 @@ upstream frontend {
 }
 
 server {
+    # WebSocket connections
+    location /api/ride/find {
+        proxy_pass http://backend/api/ride/find;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+
     location /api {
         proxy_set_header Host $host;
         proxy_pass http://backend/api;

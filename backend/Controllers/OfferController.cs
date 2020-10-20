@@ -24,10 +24,7 @@ namespace CorPool.BackEnd.Controllers {
             var apiOffers = dbOffers.Select(s => new ApiModels.Offer(s)).ToList();
 
             // Set Users
-            await Task.WhenAll(apiOffers.Select(s => s.SetUsers(async userId => {
-                var dbUser = await Database.Users.Tenanted(Tenant).FirstOrDefaultAsync(a => a.Id == userId);
-                return new ApiModels.User(dbUser);
-            })));
+            await Task.WhenAll(apiOffers.Select(s => s.SetUsers(async userId => new ApiModels.User(await UserManager.FindByIdAsync(userId)))));
 
             return apiOffers;
         }
@@ -52,7 +49,7 @@ namespace CorPool.BackEnd.Controllers {
                     Brand = offer.Vehicle.Brand
                 },
                 TenantId = Tenant.Id,
-                UserId = (await User).Id
+                UserId = UserId
             };
 
             await Database.Offers.InsertOneAsync(dbOffer);

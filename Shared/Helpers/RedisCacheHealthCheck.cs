@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace CorPool.BackEnd.Helpers {
+namespace CorPool.Shared.Helpers {
     public class RedisCacheHealthCheck : IHealthCheck {
         private readonly IDistributedCache _redisCache;
         private static string HealthCheckKey = "HEALTH_PING";

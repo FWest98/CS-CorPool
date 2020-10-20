@@ -9,11 +9,15 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "FrontEnd", "frontend\FrontE
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "Docker Compose", "Docker Compose.dcproj", "{E6341FD3-0C87-4910-8D32-77EB0FC5D603}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mongo", "Mongo\Mongo.csproj", "{D2CD778F-660A-4C11-B6E2-D2F42E367118}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mongo", "Mongo\Mongo.csproj", "{D2CD778F-660A-4C11-B6E2-D2F42E367118}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreTenant", "AspNetCoreTenant\AspNetCoreTenant.csproj", "{953F230C-AE8B-44AC-A7F1-AE932AFA1FAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreTenant", "AspNetCoreTenant\AspNetCoreTenant.csproj", "{953F230C-AE8B-44AC-A7F1-AE932AFA1FAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Worker\Worker.csproj", "{1E00A01B-AB7A-4EBA-BFBC-F675C536EFFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker", "Worker\Worker.csproj", "{1E00A01B-AB7A-4EBA-BFBC-F675C536EFFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubTest", "HubTest\HubTest.csproj", "{160C7B78-8E92-4097-AC4D-925CAC4C24BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{B1A7963A-F78B-4743-8ED3-2B19D56CFC42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{1E00A01B-AB7A-4EBA-BFBC-F675C536EFFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E00A01B-AB7A-4EBA-BFBC-F675C536EFFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E00A01B-AB7A-4EBA-BFBC-F675C536EFFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{160C7B78-8E92-4097-AC4D-925CAC4C24BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{160C7B78-8E92-4097-AC4D-925CAC4C24BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{160C7B78-8E92-4097-AC4D-925CAC4C24BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{160C7B78-8E92-4097-AC4D-925CAC4C24BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1A7963A-F78B-4743-8ED3-2B19D56CFC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A7963A-F78B-4743-8ED3-2B19D56CFC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1A7963A-F78B-4743-8ED3-2B19D56CFC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1A7963A-F78B-4743-8ED3-2B19D56CFC42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

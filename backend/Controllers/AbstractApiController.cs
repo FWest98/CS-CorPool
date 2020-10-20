@@ -19,6 +19,7 @@ namespace CorPool.BackEnd.Controllers {
         protected JwtUserManager UserManager => _userManager.Value;
 
         protected new Task<User> User => UserManager.GetUserAsync(base.User);
+        protected string UserId => UserManager.GetUserId(base.User);
 
         private readonly Lazy<IDistributedCache> _cache;
         protected IDistributedCache Cache => _cache.Value;

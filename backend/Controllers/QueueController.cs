@@ -17,7 +17,7 @@ namespace CorPool.BackEnd.Controllers {
         }
 
         public async Task<string> Get(string text) {
-            await _queueService.SendStringAsync(text, "test", "routing");
+            await _queueService.SendStringAsync(text, "corpool", "routing");
             return text + " queued";
         }
     }

@@ -9,12 +9,14 @@ WORKDIR /src
 # First only copy project files to cache the restore without including all source files
 COPY ["AspNetCoreTenant/AspNetCoreTenant.csproj", "AspNetCoreTenant/"]
 COPY ["Mongo/Mongo.csproj", "Mongo/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
 COPY ["Worker/Worker.csproj", "Worker/"]
 RUN dotnet restore "Worker/Worker.csproj"
 
 # Only copy these directories to save on recompilations
 COPY ["AspNetCoreTenant/", "AspNetCoreTenant/"]
 COPY ["Mongo/", "Mongo/"]
+COPY ["Shared/", "Shared/"]
 COPY ["Worker/", "Worker/"]
 
 # Build
