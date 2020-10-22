@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Libmongocrypt;
 using RabbitMQ.Client.Core.DependencyInjection;
 using RabbitMQ.Client.Core.DependencyInjection.Services;
+using StackExchange.Redis;
 using RedisOptions = Microsoft.AspNetCore.SignalR.StackExchangeRedis.RedisOptions;
 
 namespace CorPool.Shared {
@@ -36,8 +37,26 @@ namespace CorPool.Shared {
 
             // Configure SignalR Redis Options
             services.AddOptions<RedisOptions>()
-                .Configure<IOptions<Options.RedisOptions>>((options, redis) => {
+                .Configure<IOptions<Options.RedisOptions>, RedisBackPlaneHealthCheck>((options, redis, healthCheck) => {
                     options.Configuration = redis.Value.GetConfiguration();
+                    options.Configuration.AbortOnConnectFail = false;
+                    options.ConnectionFactory = async writer => {
+                        var connection = await ConnectionMultiplexer.ConnectAsync(options.Configuration, writer);
+                        if(!connection.IsConnected) {
+                            await writer.WriteLineAsync("Could not connect to Redis for the SignalR backplane");
+                            return connection;
+                        }
+
+                        connection.ConnectionFailed += (_, e) => {
+                            healthCheck.HasConnection = false;
+                        };
+                        connection.ConnectionRestored += (_, e) => {
+                            healthCheck.HasConnection = true;
+                        };
+
+                        healthCheck.HasConnection = true;
+                        return connection;
+                    };
                 });
 
             // Configure authentication
@@ -133,13 +152,17 @@ namespace CorPool.Shared {
             // Direct call to prevent conflict
             AddSignalR(services);
 
+            // Health checks
+            var timeout = TimeSpan.FromSeconds(3);
             services.AddHealthChecks()
-                .AddCheck<RedisCacheHealthCheck>("Redis", HealthStatus.Unhealthy)
-                .AddCheck<MongoHealthCheck>("Mongo", HealthStatus.Unhealthy)
+                //.AddCheck<RedisCacheHealthCheck>("Redis", HealthStatus.Unhealthy, timeout: timeout)
+                .AddCheck<RedisBackPlaneHealthCheck>("RedisBackPlane", HealthStatus.Unhealthy, timeout: timeout)
+                .AddCheck<MongoHealthCheck>("Mongo", HealthStatus.Unhealthy, timeout: timeout)
                 .AddRabbitMQ(
                     sp => sp.GetRequiredService<IQueueService>().Connection,
                     "RabbitMQ",
-                    HealthStatus.Unhealthy
+                    HealthStatus.Unhealthy,
+                    timeout: timeout
                 );
 
             return services;
