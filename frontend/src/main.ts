@@ -20,13 +20,17 @@ router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login', '/register'];
   const authRequired = !publicPages.includes(to.path);
-  const loggedIn = localStorage.getItem('token');
+  const token = JSON.parse(localStorage.getItem('token') || '{}');
   const now = new Date();
+  const expiry = Date.parse(token.expiry);
 
-  // TODO check expiration date here
-  // now.getTime() > loggedIn.expiry
+  if (authRequired && !token) {
+    localStorage.removeItem('token');
+    return next('/login');
+  }
 
-  if (authRequired && !loggedIn) {
+  // check expiration date here
+  if (now.getTime() > expiry) {
     localStorage.removeItem('token');
     return next('/login');
   }
