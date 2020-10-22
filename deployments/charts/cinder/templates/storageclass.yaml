@@ -1,0 +1,10 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Release.Name }}
+parameters:
+  type: __DEFAULT__
+provisioner: kubernetes.io/cinder
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true

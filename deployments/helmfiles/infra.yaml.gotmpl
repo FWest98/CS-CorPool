@@ -29,4 +29,5 @@ releases:
       - infra/letsencrypt.values.yaml.gotmpl
 
   # Cinder volumes for storage
-  # but this does not yet work :(
+  - name: {{ .Values.storageClass }}
+    chart: ../charts/cinder

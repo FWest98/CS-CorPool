@@ -11,7 +11,8 @@ replicaSetName: {{ .Values.mongo.replicaSetName }}
 replicaCount: {{ .Values.mongo.scale }}
 
 persistence:
-  enabled: false
+  enabled: true
+  storageClass: {{ .Values.storageClass }}
 
 arbiter:
   enabled: false
