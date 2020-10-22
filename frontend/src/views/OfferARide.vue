@@ -1,48 +1,97 @@
 <template>
   <v-container fluid>
     
-    <Offer/>
+    <h3>Vehicle</h3>
+    <input v-model="offer.vehicle.brand" placeholder="brand">
+    <input v-model="offer.vehicle.model" placeholder="model">
+    <input v-model="offer.vehicle.color" placeholder="color">
+    <input v-model.number="offer.vehicle.capacity" type='number' placeholder="capacity">
+
+    <h3>Location</h3>
+    <h4>From</h4>
+    <input v-model="offer.from.title" placeholder="title">
+    <input v-model="offer.from.description" placeholder="description">
+    
+    <h4>To</h4>
+    <input v-model="offer.to.title" placeholder="title">
+    <input v-model="offer.to.description" placeholder="description">
+
+    <h3>Arrival Time</h3>
+    <datetime v-model="offer.arrivalTime" type="datetime" value="2018-05-12T17:19:06.151Z">
+      <label for="startDate" slot="before">Label, click to the right</label>
+        <span class="description" slot="after">The field description</span>
+    </datetime>
+
+    <v-btn class="ma-2" color="info" @click.prevent="offerVehicle()">Complete offer</v-btn>
 
     <v-alert :value="showError" type="error" v-text="errorMessage">
       This is an error alert.
+    </v-alert>
+
+    <v-alert :value="showSuccess" type="success" v-text="successMessage">
+      This is a success alert.
     </v-alert>
 
 
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Offer from '@/components/Offer.vue';
-import axios from 'axios';
+<script>
+import { Datetime } from 'vue-datetime';
+import getConfig from '../auth';
 
-@Component({
-  components: { Offer },
-})
-export default class OfferVehicle extends Vue {
-
-  public loading: boolean = true;
-  public showError: boolean = false;
-  public errorMessage: string = 'Error while loading loading rides.';
-  public vehicles!: {};
-  public headers!: [
-    { text: 'Date', value: 'date' },
-    { text: 'From', value: 'from' },
-    { text: 'To', value: 'to' },
-    { text: 'Spots Available', value: 'spotsAvailable' },
-  ];
-
-
-  private async offerVehicle() {
-    try {
-      const response = await axios.get<{}>('api/vehicles');
-      this.vehicles = response.data;
-    } catch (e) {
-      this.showError = true;
-      this.errorMessage = `Error while loading rides: ${e.message}.`;
-    }
-    this.loading = false;
-  }
-
-}
+export default {
+  data() {
+    return {
+      showError: false,
+      showSuccess: false,
+      response: {},
+      errorMessage: 'Error while loading loading rides.',
+      successMessage: '',
+      headers: [
+        { text: 'Date', value: 'date' },
+        { text: 'From', value: 'from' },
+        { text: 'To', value: 'to' },
+        { text: 'Spots Available', value: 'spotsAvailable' },
+      ],
+      offer: {
+        vehicle: {
+          brand: '',
+          model: '',
+          color: '',
+          capacity: 0,
+        },
+        from: {
+          title: '',
+          description: '',
+        },
+        to: {
+          title: '',
+          description: '',
+        },
+        arrivalTime: '',
+      },
+    };
+  },
+  methods: {
+    async offerVehicle() {
+      try {
+        const config = getConfig();
+        const response = await axios.post('/offer', this.offer, config);
+        this.response = response.data;
+        this.showSuccess = true;
+        this.successMessage =  `Your offer with ID "${this.response.id}" has been added`;
+      } catch (e) {
+        this.showError = true;
+        this.errorMessage = `Error while adding offer: ${e.message}.`;
+      }
+    },
+  },
+};
 </script>
+
+<style scoped>
+ input {
+   width: 100%;
+ }
+</style>

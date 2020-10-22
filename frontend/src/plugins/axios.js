@@ -23,11 +23,11 @@ const _axios = axios.create(config);
 // https://github.com/axios/axios/issues/1383
 _axios.interceptors.request.use(
   config => {
-    // add the JWT to the header if it is present in localStorage
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // // add the JWT to the header if it is present in localStorage
+    // const token = localStorage.getItem('token');
+    // if (token) {
+    //   config.headers.Authorization = `Bearer ${token}`;
+    // }
     return config;
   },
   function(error) {

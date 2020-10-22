@@ -55,7 +55,6 @@ export default {
                 });
 
                 localStorage.setItem('token', JSON.stringify(response.data));
-                // console.log('JWT Token\n', response.data);
                 this.$router.replace({name: 'home'});
             } catch (e) {
                 // console.log(e);
