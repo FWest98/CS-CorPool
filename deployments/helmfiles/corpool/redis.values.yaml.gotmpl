@@ -7,11 +7,13 @@ password: {{ .Values.redis.password }}
 
 master:
   persistence:
-    enabled: false
+    enabled: true
+    storageClass: {{ .Values.storageClass }}
 
 slave:
   persistence:
-    enabled: false
+    enabled: true
+    storageClass: {{ .Values.storageClass }}
 
 sentinel:
   enabled: true
