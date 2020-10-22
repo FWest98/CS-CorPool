@@ -26,6 +26,7 @@ services:
       - RabbitMq__Password=root
       - Redis__HostName=redis
       - Redis__Port=6379
+      - Redis__Password=root
   
   worker:
     scale: 1
@@ -52,6 +53,7 @@ services:
       - RabbitMq__Password=root
       - Redis__HostName=redis
       - Redis__Port=6379
+      - Redis__Password=root
       - HealthCheck__Enabled=true
       - HealthCheck__FilePath=/tmp/health
   
@@ -169,7 +171,7 @@ services:
     volumes:
       - redis-data:/bitnami/redis/data
 
-volumes:
+volumes: 
   mongo-data:
   rabbitmq-data:
   redis-data:
