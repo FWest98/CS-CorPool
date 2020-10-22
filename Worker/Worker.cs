@@ -17,10 +17,13 @@ namespace CorPool.Worker {
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
             _queueService.StartConsuming();
+
+            // Worker only serves to start the queueService
             while (!stoppingToken.IsCancellationRequested) {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(10000, stoppingToken);
             }
+            _queueService.StopConsuming();
         }
     }
 }

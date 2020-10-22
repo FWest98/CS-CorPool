@@ -6,6 +6,7 @@ using CorPool.BackEnd.Helpers.Jwt;
 using CorPool.Mongo.DatabaseModels;
 using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
+using ApiModels = CorPool.Shared.ApiModels;
 
 namespace CorPool.BackEnd.Controllers
 {

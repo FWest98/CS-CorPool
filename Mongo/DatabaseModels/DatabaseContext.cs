@@ -13,6 +13,7 @@ namespace CorPool.Mongo.DatabaseModels {
         }
 
         public IMongoCollection<Offer> Offers => _dbProvider.GetCollection<Offer>("Offers");
+        public IMongoCollection<RideRequest> RideRequests => _dbProvider.GetCollection<RideRequest>("RideRequests");
         public IMongoCollection<Tenant> Tenants => _dbProvider.GetCollection<Tenant>("Tenants");
         public IMongoCollection<User> Users => _dbProvider.GetCollection<User>("Users");
     }

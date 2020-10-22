@@ -23,7 +23,7 @@ namespace CorPool.Worker {
 
                     // Add RabbitMq Client
                     services.AddRabbitMqConsumer(hostContext.Configuration.GetSection("RabbitMq"))
-                        .AddAsyncMessageHandlerSingleton<MessageHandler>("routing");
+                        .AddAsyncMessageHandlerSingleton<MessageHandler>("*");
 
                     // Health check publisher
                     services.Configure<HealthCheckPublisherOptions>(options => {

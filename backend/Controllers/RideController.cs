@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using RabbitMQ.Client.Core.DependencyInjection.Services;
+using ApiModels = CorPool.Shared.ApiModels;
 
 namespace CorPool.BackEnd.Controllers {
     [Tenanted]

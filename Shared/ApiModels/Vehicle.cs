@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
-namespace CorPool.BackEnd.ApiModels {
+namespace CorPool.Shared.ApiModels {
     public class Vehicle {
         [Required]
         public string Brand { get; set; }

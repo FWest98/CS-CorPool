@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
+using ApiModels = CorPool.Shared.ApiModels;
 
 namespace CorPool.BackEnd.Controllers {
     [Tenanted]

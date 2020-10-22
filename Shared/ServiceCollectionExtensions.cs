@@ -6,6 +6,7 @@ using CorPool.BackEnd.Helpers;
 using CorPool.Mongo;
 using CorPool.Mongo.Helpers;
 using CorPool.Shared.Helpers;
+using CorPool.Shared.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SignalR;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Libmongocrypt;
 using RabbitMQ.Client.Core.DependencyInjection;
 using RabbitMQ.Client.Core.DependencyInjection.Services;
+using RedisOptions = Microsoft.AspNetCore.SignalR.StackExchangeRedis.RedisOptions;
 
 namespace CorPool.Shared {
     public static class ServiceCollectionExtensions {
@@ -69,6 +71,9 @@ namespace CorPool.Shared {
         }
 
         public static IServiceCollection AddRabbitMqProducer(this IServiceCollection services, IConfiguration config, IConfiguration exchangeConfig) {
+            // Register options
+            services.Configure<RabbitOptions>(exchangeConfig);
+
             // Register RabbitMQ
             services.AddRabbitMqClient(config)
                 .AddProductionExchange(exchangeConfig["Name"], exchangeConfig);
@@ -81,6 +86,9 @@ namespace CorPool.Shared {
         }
 
         public static IServiceCollection AddRabbitMqConsumer(this IServiceCollection services, IConfiguration config, IConfiguration exchangeConfig) {
+            // Register options
+            services.Configure<RabbitOptions>(exchangeConfig);
+
             // Register RabbitMQ
             services.AddRabbitMqClient(config)
                 .AddConsumptionExchange(exchangeConfig["Name"], exchangeConfig);
