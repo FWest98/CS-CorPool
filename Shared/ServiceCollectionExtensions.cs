@@ -34,6 +34,7 @@ namespace CorPool.Shared {
 
             // Add Redis hub lifetime manager
             services.AddSingleton(typeof(HubLifetimeManager<>), typeof(RedisHubLifetimeManager<>));
+            services.AddSingleton<RedisBackPlaneHealthCheck>();
 
             // Configure SignalR Redis Options
             services.AddOptions<RedisOptions>()
