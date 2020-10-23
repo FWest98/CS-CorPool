@@ -17,12 +17,11 @@
     <input v-model="offer.to.description" placeholder="description">
 
     <h3>Arrival Time</h3>
-    <datetime v-model="offer.arrivalTime" type="datetime" value="2018-05-12T17:19:06.151Z">
-      <label for="startDate" slot="before">Label, click to the right</label>
-        <span class="description" slot="after">The field description</span>
+    <datetime v-model="offer.arrivalTime" type="datetime">
+
     </datetime>
 
-    <v-btn class="ma-2" color="info" @click.prevent="offerVehicle()">Complete offer</v-btn>
+    <v-btn class="ma-2" color="info" @click.prevent="offerVehicle()">Offer Vehicle</v-btn>
 
     <v-alert :value="showError" type="error" v-text="errorMessage">
       This is an error alert.
@@ -69,7 +68,7 @@ export default {
           title: '',
           description: '',
         },
-        arrivalTime: '',
+        arrivalTime: new Date().toISOString(),
       },
     };
   },

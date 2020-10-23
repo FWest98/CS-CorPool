@@ -1,39 +1,53 @@
 <template>
   <v-container fluid>
     <v-slide-y-transition mode="out-in">
+      <v-container>
       <v-row>
         <v-col>
           <h1>Find a ride</h1>
           <p>Here you can find a ride.</p>
-
-            <div id="divMessages" class="messages"> 
-        
-            </div>
             
-    <h3>From</h3>
-    <input v-model="rideRequest.from.title" placeholder="title">
-    <input v-model="rideRequest.from.description" placeholder="description">
-    
-    <h3>To</h3>
-    <input v-model="rideRequest.to.title" placeholder="title">
-    <input v-model="rideRequest.to.description" placeholder="description">
+          <h3>From</h3>
+          <input v-model="rideRequest.from.title" placeholder="title">
+          <input v-model="rideRequest.from.description" placeholder="description">
+          
+          <h3>To</h3>
+          <input v-model="rideRequest.to.title" placeholder="title">
+          <input v-model="rideRequest.to.description" placeholder="description">
 
-    <h3>Arrival Time</h3>
-    <datetime v-model="rideRequest.arrivalTime" type="datetime" value="2018-05-12T17:19:06.151Z">
-      <label for="startDate" slot="before">Label, click to the right</label>
-        <span class="description" slot="after">The field description</span>
-    </datetime>
+          <h3>Arrival Time</h3>
+          <datetime v-model="rideRequest.arrivalTime" type="datetime">
+          </datetime>
 
-            <v-btn class="ma-2" color="info" @click.prevent="findRide()">Find a ride</v-btn>
-
-            <ul v-for="(item, index) in messages" v-bind:key="index + 'itemMessage'">
-                <li><b>Name: </b>{{item.user}}</li>
-                <li><b>Message: </b>{{item.message}}</li>
-            </ul>
-
+          <v-btn class="ma-2" color="info" @click.prevent="findRide()">Find a ride</v-btn>
 
         </v-col>
+
       </v-row>
+    
+      <v-row>
+        <v-col>
+            <v-data-table
+              :headers="headers"
+              :items="offers"
+              hide-default-footer
+              :loading="loading"
+              class="elevation-1"
+              disable-pagination
+            >
+            <!-- TODO td to match offer object  -->
+              <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+              <template v-slot:item.date="{ item }">
+                <td>{{ item.date | date }}</td>
+              </template>
+              <template v-slot:item.spotsAvailable="{ item }">
+                <!-- <v-chip :color="getColor(item.spotsAvailable)" dark>{{ item.spotsAvailable }}</v-chip> -->
+                <v-chip dark>{{ item.spotsAvailable }}</v-chip>
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-slide-y-transition>
 
     <v-alert :value="showError" type="error" v-text="errorMessage">
@@ -60,7 +74,7 @@ export default Vue.extend({
       errorMessage: 'Error while loading loading offers.',
       connection: {} as signalR.HubConnection,
       rideRequest: {
-          arrivalTime: '',
+          arrivalTime: new Date().toISOString(),
           from: {
               title: '',
               description: '',
@@ -89,7 +103,7 @@ export default Vue.extend({
         .invoke("RideRequest", this.rideRequest)
         .catch(function(err) {
             vue.showError = true;
-            vue.errorMessage = `Error while initiating socket connection: ${err.message}.`;
+            vue.errorMessage = `Error while connecting to socket: ${err.message}.`;
         });
     },
   },
@@ -118,10 +132,10 @@ export default Vue.extend({
 
   async mounted() {
     const thisVue = this;
-    thisVue.connection.start();
+    // thisVue.connection.start();
     thisVue.connection.on("RideResult", function(offer: Offer) {
       thisVue.offers.push(offer);
-      console.log(offer);
+      // console.log(offer);
     });
   },
 });

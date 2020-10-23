@@ -31,17 +31,6 @@
     <v-alert :value="showError" type="error" v-text="errorMessage">
       This is an error alert.
     </v-alert>
-
-    <!-- <v-alert :value="showError" type="warning">
-      Are you sure you're using ASP.NET Core endpoint? (default at
-      <a href="http://localhost:5000/fetch-data">http://localhost:5000</a
-      >)
-      <br />
-      API call would fail with status code 404 when calling from Vue app
-      (default at
-      <a href="http://localhost:8080/find-a-ride">http://localhost:8080</a>)
-      without devServer proxy settings in vue.config.js file.
-    </v-alert> -->
   </v-container>
 </template>
 

@@ -7,9 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@microsoft/signalr": "^3.1.7",
-    "@types/vue-datetime": "^1.0.0",
+    "@microsoft/signalr": "^3.1.9",
     "@types/node": "^14.0.24",
+    "@types/vue-datetime": "^1.0.0",
     "core-js": "^3.6.5",
     "date-fns": "^2.15.0",
     "luxon": "^1.25.0",
