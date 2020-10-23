@@ -62,6 +62,7 @@ export default class App extends Vue {
     { title: 'Offer a ride', icon: 'mdi-car-multiple', link: '/offer-a-ride' },
     { title: 'Your offers', icon: 'mdi-offer', link: '/your-offers' },
     { title: 'Your rides', icon: 'mdi-account-search', link: '/your-rides' },
+    { title: 'Find a ride', icon: 'mdi-magnify', link: '/find-a-ride' },
     { title: 'Profile', icon: 'mdi-account', link: '/profile' },
   ];
   private async logout() {

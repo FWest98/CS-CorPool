@@ -34,6 +34,11 @@ export default new Router({
       component: () => import('./views/YourRides.vue'),
     },
     {
+      path: '/find-a-ride',
+      name: 'find-a-ride',
+      component: () => import('./views/FindARide.vue'),
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: () => import('./views/Profile.vue'),

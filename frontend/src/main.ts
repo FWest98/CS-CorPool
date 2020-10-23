@@ -11,8 +11,8 @@ import dateFilter from '@/filters/date.filter';
 import { Datetime } from 'vue-datetime';
 import 'vue-datetime/dist/vue-datetime.css';
 Vue.component('datetime', Datetime);
-Vue.config.productionTip = false;
 
+Vue.config.productionTip = false;
 Vue.filter('date', dateFilter);
 
 // https://jasonwatmore.com/post/2018/07/06/vue-vuex-jwt-authentication-tutorial-example
