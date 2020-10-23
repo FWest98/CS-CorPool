@@ -60,7 +60,8 @@ export default class App extends Vue {
   private items = [
     { title: 'Home', icon: 'home', link: '/' },
     { title: 'Offer a ride', icon: 'mdi-car-multiple', link: '/offer-a-ride' },
-    { title: 'Find a ride', icon: 'mdi-account-search', link: '/find-a-ride' },
+    { title: 'Your offers', icon: 'mdi-offer', link: '/your-offers' },
+    { title: 'Your rides', icon: 'mdi-account-search', link: '/your-rides' },
     { title: 'Profile', icon: 'mdi-account', link: '/profile' },
   ];
   private async logout() {

@@ -3,15 +3,16 @@
     <v-slide-y-transition mode="out-in">
       <v-row>
         <v-col>
-          <h1>Find a ride</h1>
-          <p>Here you can view all existing offers!!!</p>
+          <h1>Your Rides</h1>
+          <p>Here you can view all the people that joined your ride.</p>
 
           <v-data-table
             :headers="headers"
-            :items="offers"
+            :items="rides"
             hide-default-footer
             :loading="loading"
             class="elevation-1"
+            disable-pagination
           >
           <!-- TODO td to match offer object  -->
             <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
@@ -60,14 +61,10 @@ export default Vue.extend({
       loading: true,
       showError: false,
       errorMessage: 'Error while loading loading offers.',
-      offers: [],
+      rides: [],
       headers: [
         { text: 'User', value: 'user.name' },
-        { text: 'From', value: 'from.title' },
-        { text: 'To', value: 'to.title' },
-        { text: 'Arrival Time', value: 'arrivalTime' },
-        { text: 'Vehicle', value: 'vehicle.brand' },
-        { text: 'Remaining Capacity', value: 'remainingCapacity' },
+        { text: 'Pick-up Point', value: 'pickupPoint.description' },
       ],
     };
   },
@@ -76,8 +73,20 @@ export default Vue.extend({
     async fetchRides() {
       try {
         const config = getConfig();
-        const response = await axios.get('/offer', config);
-        this.offers = response.data;
+        const response = await axios.get('/ride', config);
+        this.rides = response.data;
+        // this.rides = [
+        //     {
+        //         "user": {
+        //             "id": "5f91da8911624523450c67e2",
+        //             "name": "Alexander Lazovik"
+        //         },
+        //         "pickupPoint": {
+        //             "title": "Home",
+        //             "description": "Dorpsweg 41, Haren"
+        //         }
+        //     }
+        // ];
       } catch (e) {
         this.showError = true;
         this.errorMessage = `Error while loading rides: ${e.message}.`;

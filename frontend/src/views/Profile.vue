@@ -4,7 +4,7 @@
       <v-row>
         <v-col>
           <h1>Profile</h1>
-          <p>Below can find the information in your the User JSON object</p>
+          <p>Below can find the information in the 'User' JSON object</p>
 
           <v-data-table
             :headers="headers"
@@ -12,6 +12,7 @@
             hide-default-footer
             :loading="loading"
             class="elevation-1"
+            disable-pagination
           >
             
             <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
@@ -49,7 +50,7 @@ export default Vue.extend({
       loading: true,
       showError: false,
       errorMessage: 'Error while loading loading userdata.',
-      user: [{}],
+      user: [],
       headers: [
         { text: 'Key', value: 'key' },
         { text: 'Value', value: 'value' },
@@ -65,9 +66,11 @@ export default Vue.extend({
         // convert json in to usable format for v-data-table
         for ( const i in response.data ) {
           if ( response.data.hasOwnProperty( i ) ) {
-            this.user.push( { key: i, value: response.data[i] } );
+            this.user.push( { key: i, value: response.data[i] ?? '-' }  as never);
           }
         }
+        this.user.pop(); // remove vehicles
+
       } catch (e) {
         this.showError = true;
         this.errorMessage = `Error while loading user: ${e.message}.`;
