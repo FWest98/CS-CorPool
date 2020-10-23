@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using ApiModels = CorPool.Shared.ApiModels;
 
 namespace CorPool.BackEnd.Controllers {
@@ -20,7 +21,7 @@ namespace CorPool.BackEnd.Controllers {
 
         [HttpGet]
         public async Task<ActionResult<List<ApiModels.Offer>>> Get() {
-            var dbOffers = await Database.Offers.Tenanted(Tenant).ToListAsync();
+            var dbOffers = await Database.Offers.Tenanted(Tenant).Where(s => s.UserId == UserId).ToListAsync();
             var apiOffers = dbOffers.Select(s => new ApiModels.Offer(s)).ToList();
 
             // Set Users
