@@ -49,10 +49,8 @@ import Vue from 'vue';
 import { Offer } from '../models/Offer';
 import { Location } from '../models/Location';
 import { Vehicle } from '../models/Vehicle';
-import * as signalR from '@aspnet/signalr';
-
-import axios from 'axios';
-import getConfig from '../auth';
+import * as signalR from '@microsoft/signalr';
+import auth from '../auth';
 
 export default Vue.extend({
   data() {
@@ -60,7 +58,7 @@ export default Vue.extend({
       loading: true,
       showError: false,
       errorMessage: 'Error while loading loading offers.',
-      connection: {},
+      connection: {} as signalR.HubConnection,
       rideRequest: {
           arrivalTime: '',
           from: {
@@ -72,7 +70,7 @@ export default Vue.extend({
               description: '',
           },
       },
-      rides: [],
+      offers: [] as Offer[],
       headers: [
         { text: 'User', value: 'user.name' },
         { text: 'From', value: 'from.title' },
@@ -84,45 +82,46 @@ export default Vue.extend({
     };
   },
   methods: {
-    async setupSocket() {
-      try {
-        const config = getConfig();
-        const response = await axios.get('/ride', config);
-        // ignore response data
-      } catch (e) {
-        this.showError = true;
-        this.errorMessage = `Error while initiating socket connection: ${e.message}.`;
-      }
-      this.loading = false;
-    },
     async findRide() {
+      const vue = this;
       // function executed when you click the button
       this.connection
         .invoke("RideRequest", this.rideRequest)
         .catch(function(err) {
-            this.showError = true;
-            this.errorMessage = `Error while initiating socket connection: ${err.message}.`;
+            vue.showError = true;
+            vue.errorMessage = `Error while initiating socket connection: ${err.message}.`;
         });
     },
   },
   async created() {
-    this.setupSocket();
+    const headers = auth();
+    if(!headers) return;
+    const token = headers.headers.Authorization.replace("Bearer ", "");
 
     this.connection = new signalR.HubConnectionBuilder()
-        .withUrl("/api/ride")
+        .withUrl(`/api/ride/find?access_token=${token}`, {
+          transport: signalR.HttpTransportType.WebSockets,
+          skipNegotiation: true
+        })
         .configureLogging(signalR.LogLevel.Information)
+        .withAutomaticReconnect()
         .build();
 
-    this.connection.start().catch( err => {
-        this.showError = true;
-        this.errorMessage = `Error establishing connection to socket: ${err.message}.`;
+    const vue = this;
+    this.connection.start().catch(err => {
+        vue.showError = true;
+        vue.errorMessage = `Error establishing connection to socket: ${err.message}.`;
       });
+
+    this.loading = false;
   },
+
   async mounted() {
     const thisVue = this;
     thisVue.connection.start();
-    thisVue.connection.on("RideRequest", function(rideRequest) {
-      thisVue.rides.push(rideRequest);
+    thisVue.connection.on("RideResult", function(offer: Offer) {
+      thisVue.offers.push(offer);
+      console.log(offer);
     });
   },
 });
