@@ -12,7 +12,7 @@ The front-end is an SPA built in Vue.js, nothing too special. It communicates to
 The back-end is an ASP.NET Core application written in C#. The back-end interconnects all components in the system, but mostly only performs simple CRUD operations. It is designed to be fully stateless, so it can fail easily and quickly when something goes wrong.
 
 ### Worker
-The workers are a component that perform more advanced tasks, in this case it will perform the route finding procedure. In the current form, this algorithm is quite simple, but this could become quite an extensive and complicated procedure that demands more computing power than acceptable within the timeframe of a simple API request. The workers retireve ride requests from RabbitMQ, find an appropriate ride offer from MongoDB, and send the result back to the user via Redis.
+The workers are a component that perform more advanced tasks, in this case it will perform the route finding procedure. In the current form, this algorithm is quite simple, but this could become quite an extensive and complicated procedure that demands more computing power than acceptable within the timeframe of a simple API request. The workers retrieve ride requests from RabbitMQ, find an appropriate ride offer from MongoDB, and send the result back to the user via Redis.
 
 ## Technologies and techniques
 ### SignalR
@@ -21,7 +21,7 @@ As mentioned before, SignalR is a RMI library by Microsoft that makes use of Web
 SignalR is designed to serve not only one-on-one connections between server and client, but it also provides the option to communicate between connections. On a redundant system, this communication goes via a so-called backplane that allows each component to be aware of all available connections. This enables us to send an offer found in the Worker to the front-end via the back-end without any additional coding in the back-end.
 
 ### ASP.NET Core Identity
-The use of the Identity system in .NET Core allows us to easily provide authentication and authorization functionality in CorPool. We use MongoDB as the backing store, and it will natively offer the use of JWT for authentication instead of session cookies, allowing for a fully stateless backend.
+The use of the Identity system in .NET Core allows us to easily provide authentication and authorization functionality in CorPool. We use MongoDB as the backing store, and it will natively offer the use of JWT for authentication instead of session cookies, allowing for a fully stateless backend. The JWTs (and their corresponding expiration date) are stored in the localstorage on the user device.
 
 ### Multitenancy
 The multitenancy in CorPool is achieved within the framework itself by implementing a custom middleware for .NET Core. The implementation of this can be found in the folder `AspNetCoreTenant`. This system allows all CRUD operations to be tenant-aware without much explicit coding, limiting the chance that a programmer error leaks data between tenants.
