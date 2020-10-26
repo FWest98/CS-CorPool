@@ -24,6 +24,16 @@ export default new Router({
       component: () => import('./views/OfferARide.vue'),
     },
     {
+      path: '/your-offers',
+      name: 'your-offers',
+      component: () => import('./views/YourOffers.vue'),
+    },
+    {
+      path: '/your-rides',
+      name: 'your-ride',
+      component: () => import('./views/YourRides.vue'),
+    },
+    {
       path: '/find-a-ride',
       name: 'find-a-ride',
       component: () => import('./views/FindARide.vue'),

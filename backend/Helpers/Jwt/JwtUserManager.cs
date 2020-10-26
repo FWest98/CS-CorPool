@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using AuthenticationOptions = CorPool.BackEnd.Options.AuthenticationOptions;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace CorPool.BackEnd.Helpers.Jwt {
     public class JwtUserManager : UserManager<User> {

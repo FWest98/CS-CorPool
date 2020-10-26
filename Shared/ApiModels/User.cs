@@ -1,6 +1,6 @@
 ﻿using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
-namespace CorPool.BackEnd.ApiModels {
+namespace CorPool.Shared.ApiModels {
     public class User {
         public string Id { get; set; }
         public string Name { get; set; }

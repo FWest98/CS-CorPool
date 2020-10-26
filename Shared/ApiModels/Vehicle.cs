@@ -1,10 +1,14 @@
-﻿using DatabaseModels = CorPool.Mongo.DatabaseModels;
+﻿using System.ComponentModel.DataAnnotations;
+using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
-namespace CorPool.BackEnd.ApiModels {
+namespace CorPool.Shared.ApiModels {
     public class Vehicle {
+        [Required]
         public string Brand { get; set; }
         public string Model { get; set; }
         public string Color { get; set; }
+
+        [Required]
         public int Capacity { get; set; } // including driver
 
         public Vehicle() { }

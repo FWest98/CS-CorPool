@@ -6,21 +6,18 @@ using CorPool.BackEnd.Helpers.Jwt;
 using CorPool.Mongo.DatabaseModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 
 namespace CorPool.BackEnd.Controllers {
     public class SeedController : AbstractApiController {
-        private readonly JwtUserManager _userManager;
-
-        public SeedController(DatabaseContext database, JwtUserManager userManager) : base(database) {
-            _userManager = userManager;
-        }
+        public SeedController(Lazy<DatabaseContext> Database, Lazy<JwtUserManager> userManager, Lazy<IDistributedCache> cache) : base(Database, userManager, cache) { }
 
         public async Task<ActionResult<string>> Get() {
-            // Clear database
-            await database.Offers.DeleteManyAsync(s => true);
-            await database.Users.DeleteManyAsync(s => true);
-            await database.Tenants.DeleteManyAsync(s => true);
+            // Clear Database
+            await Database.Offers.DeleteManyAsync(s => true);
+            await Database.Users.DeleteManyAsync(s => true);
+            await Database.Tenants.DeleteManyAsync(s => true);
 
             // Insert tenants
             var shell = new Tenant {
@@ -33,7 +30,7 @@ namespace CorPool.BackEnd.Controllers {
             };
 
             var tenants = new List<Tenant> { shell, ah };
-            await database.Tenants.InsertManyAsync(tenants);
+            await Database.Tenants.InsertManyAsync(tenants);
 
             // Insert users
             var volvo = new Vehicle { Brand = "Volvo", Model = "V70", Color = "Blue", Capacity = 5 };
@@ -76,12 +73,12 @@ namespace CorPool.BackEnd.Controllers {
             };
 
             var users = new List<User> { floris, sjouke, alexander, vasilios };
-            await database.Users.InsertManyAsync(users);
+            await Database.Users.InsertManyAsync(users);
 
             // Set users passwords and emails
             users.ForEach(s => {
-                _userManager.AddPasswordAsync(s, "Passw0rd!");
-                _userManager.SetEmailAsync(s, s.Email);
+                UserManager.AddPasswordAsync(s, "Passw0rd!");
+                UserManager.SetEmailAsync(s, s.Email);
             });
 
             // Insert offers
@@ -109,9 +106,9 @@ namespace CorPool.BackEnd.Controllers {
                 }
             };
 
-            await database.Offers.InsertManyAsync(offers);
+            await Database.Offers.InsertManyAsync(offers);
 
-            return "Seeding database succeeded";
+            return "Seeding Database succeeded";
         }
     }
 }

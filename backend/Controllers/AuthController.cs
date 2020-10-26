@@ -1,51 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Corpool.AspNetCoreTenant;
 using CorPool.BackEnd.Helpers.Jwt;
-using CorPool.BackEnd.Options;
 using CorPool.Mongo.DatabaseModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace CorPool.BackEnd.Controllers {
     [Tenanted]
     public class AuthController : AbstractApiController {
-        private readonly IOptionsSnapshot<AuthenticationOptions> _authOptions;
-        private readonly JwtUserManager _userManager;
-
-        public AuthController(DatabaseContext database, IOptionsSnapshot<AuthenticationOptions> authOptions, JwtUserManager userManager) : base(database) {
-            _authOptions = authOptions;
-            _userManager = userManager;
-        }
+        public AuthController(Lazy<DatabaseContext> database, Lazy<JwtUserManager> userManager, Lazy<IDistributedCache> cache) : base(database, userManager, cache) { }
 
         [Authorize]
         public async Task<User> Get() {
             // Get current user
-            return await _userManager.GetUserAsync(User);
+            return await User;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Models.LoginModel login) {
-            if (string.IsNullOrWhiteSpace(login.username) || string.IsNullOrWhiteSpace(login.password))
+            if (string.IsNullOrWhiteSpace(login.Username) || string.IsNullOrWhiteSpace(login.Password))
                 return BadRequest();
 
             // Obtain user
-            var user = await _userManager.FindByNameAsync(login.username);
-            user ??= await _userManager.FindByEmailAsync(login.username);
+            var user = await UserManager.FindByNameAsync(login.Username);
+            user ??= await UserManager.FindByEmailAsync(login.Username);
             if (user == null)
                 return Unauthorized();
 
             // Check password
-            if (!await _userManager.CheckPasswordAsync(user, login.password))
+            if (!await UserManager.CheckPasswordAsync(user, login.Password))
                 return Unauthorized();
 
             // Authorized, return JWT
-            var (token, expiry) = await _userManager.GenerateJwtToken(user);
+            var (token, expiry) = await UserManager.GenerateJwtToken(user);
             return Ok(new Models.TokenModel {
                 Key = token,
                 Expiry = expiry
@@ -54,8 +43,8 @@ namespace CorPool.BackEnd.Controllers {
 
         public class Models {
             public class LoginModel {
-                public string username { get; set; }
-                public string password { get; set; }
+                public string Username { get; set; }
+                public string Password { get; set; }
             }
 
             public class TokenModel {

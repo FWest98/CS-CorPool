@@ -7,3 +7,4 @@ RUN apk -U add --no-cache curl gnupg
 
 # Insert sops
 COPY sops-v3.6.0.linux /usr/local/bin/sops
+RUN chmod 0755 /usr/local/bin/sops

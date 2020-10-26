@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
-namespace CorPool.BackEnd.ApiModels {
+namespace CorPool.Shared.ApiModels {
     public class Offer {
         public string Id { get; set; }
         public Vehicle Vehicle { get; set; }

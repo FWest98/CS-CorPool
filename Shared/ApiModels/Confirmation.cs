@@ -1,6 +1,6 @@
 ﻿using DatabaseModels = CorPool.Mongo.DatabaseModels;
 
-namespace CorPool.BackEnd.ApiModels {
+namespace CorPool.Shared.ApiModels {
     public class Confirmation {
         public User User { get; set; }
         public Location PickupPoint { get; set; }
